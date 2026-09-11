@@ -1,1 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>끝말잇기 봇</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 
+<body>
+
+<div class="game-container">
+
+    <h1>끝말잇기 🤖</h1>
+
+    <!-- 시작 화면 -->
+    <div id="startScreen">
+        <h2>누가 먼저 할까요?</h2>
+
+        <div class="mode-buttons">
+            <button onclick="startGame('first')">선공</button>
+            <button onclick="startGame('second')">후공</button>
+            <button onclick="startGame('random')">랜덤</button>
+        </div>
+    </div>
+
+    <!-- 게임 화면 -->
+    <div id="gameScreen" class="hidden">
+
+        <div class="status">
+            <div>목숨: <span id="lives">❤️ ❤️</span></div>
+            <div>제한시간: <span id="timer">20</span>초</div>
+        </div>
+
+        <div class="current-box">
+            <p>현재 단어</p>
+            <h2 id="currentWord">-</h2>
+            <p id="nextLetter"></p>
+        </div>
+
+        <div id="message"></div>
+
+        <div class="input-area">
+            <input
+                type="text"
+                id="wordInput"
+                placeholder="단어를 입력하세요"
+                autocomplete="off"
+            >
+            <button onclick="submitWord()">확인</button>
+        </div>
+
+        <div class="word-history">
+            <h3>사용한 단어</h3>
+            <div id="wordList"></div>
+        </div>
+
+    </div>
+
+    <!-- 게임 종료 -->
+    <div id="endScreen" class="hidden">
+        <h2 id="resultText"></h2>
+        <button onclick="location.reload()">다시 하기</button>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
