@@ -18,6 +18,8 @@ const START_LETTERS = [
 const MAX_LIVES = 2;
 const TIME_LIMIT = 20;
 
+let round = 1;
+
 
 // =====================================================
 // 사전
