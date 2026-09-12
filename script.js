@@ -504,12 +504,12 @@ function submitWord() {
         getRequiredLetter();
 
 
-    if (word[0] !== requiredLetter) {
+    if (!canStartWith(word, requiredLetter)) {
 
-        message.textContent =
-            "단어의 첫 글자가 맞지 않습니다.";
+    message.textContent =
+        "단어의 첫 글자가 맞지 않습니다.";
 
-        return;
+    return;
     }
 
 
