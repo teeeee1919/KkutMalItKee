@@ -2,7 +2,6 @@
 // 끝말잇기 AI
 // =====================================================
 
-
 // =====================================================
 // 기본 설정
 // =====================================================
@@ -27,11 +26,7 @@ const TIME_LIMIT = 20;
 let dictionary = [];
 let dictionarySet = new Set();
 
-// 첫 글자별 단어
 let wordsByFirstLetter = new Map();
-
-// 마지막 글자별 단어
-let wordsByLastLetter = new Map();
 
 
 // =====================================================
@@ -104,30 +99,18 @@ fetch("words.txt")
         dictionarySet = new Set(dictionary);
 
 
-        // -------------------------------------------------
-        // 첫 글자 / 마지막 글자별로 색인
-        // -------------------------------------------------
-
+        // 첫 글자별로 단어 저장
         for (const word of dictionary) {
 
             const first = word[0];
-            const last = word[word.length - 1];
 
-
-            // 첫 글자
             if (!wordsByFirstLetter.has(first)) {
                 wordsByFirstLetter.set(first, []);
             }
 
-            wordsByFirstLetter.get(first).push(word);
-
-
-            // 마지막 글자
-            if (!wordsByLastLetter.has(last)) {
-                wordsByLastLetter.set(last, []);
-            }
-
-            wordsByLastLetter.get(last).push(word);
+            wordsByFirstLetter
+                .get(first)
+                .push(word);
         }
 
 
@@ -145,13 +128,13 @@ fetch("words.txt")
 
         alert(
             "words.txt를 불러오지 못했습니다.\n" +
-            "GitHub에 words.txt가 제대로 올라갔는지 확인해주세요."
+            "GitHub에 words.txt가 제대로 올라가 있는지 확인해주세요."
         );
     });
 
 
 // =====================================================
-// 시작
+// 게임 시작
 // =====================================================
 
 function startGame(mode) {
@@ -164,7 +147,6 @@ function startGame(mode) {
     }
 
 
-    // 게임 초기화
     currentWord = "";
     usedWords = [];
 
@@ -177,13 +159,19 @@ function startGame(mode) {
 
     // 시작 글자 랜덤
     const randomIndex =
-        Math.floor(Math.random() * START_LETTERS.length);
+        Math.floor(
+            Math.random() * START_LETTERS.length
+        );
 
     const startingLetter =
         START_LETTERS[randomIndex];
 
-    startLetterText.textContent = startingLetter;
-    requiredLetterText.textContent = startingLetter;
+
+    startLetterText.textContent =
+        startingLetter;
+
+    requiredLetterText.textContent =
+        startingLetter;
 
 
     // 선공 / 후공 / 랜덤
@@ -191,18 +179,25 @@ function startGame(mode) {
 
         playerTurn = true;
 
-    } else if (mode === "bot") {
+    }
+
+    else if (mode === "bot") {
 
         playerTurn = false;
 
-    } else {
+    }
 
-        playerTurn = Math.random() < 0.5;
+    else {
+
+        playerTurn =
+            Math.random() < 0.5;
     }
 
 
     startScreen.classList.add("hidden");
+
     endScreen.classList.add("hidden");
+
     gameScreen.classList.remove("hidden");
 
 
@@ -210,19 +205,20 @@ function startGame(mode) {
 
     updateHistory();
 
+    currentWordText.textContent = "";
+
     message.textContent = "";
 
 
-    // -------------------------------------------------
-    // 선공이면 바로 플레이어
-    // 후공이면 봇
-    // -------------------------------------------------
-
+    // 플레이어 선공
     if (playerTurn) {
 
         setPlayerTurn();
 
-    } else {
+    }
+
+    // 봇 선공
+    else {
 
         setBotTurn();
 
@@ -243,6 +239,7 @@ function setPlayerTurn() {
         "당신의 턴";
 
     submitButton.disabled = false;
+
     wordInput.disabled = false;
 
     wordInput.focus();
@@ -263,6 +260,7 @@ function setBotTurn() {
         "봇이 생각 중...";
 
     submitButton.disabled = true;
+
     wordInput.disabled = true;
 
     stopTimer();
@@ -270,7 +268,7 @@ function setBotTurn() {
 
 
 // =====================================================
-// 현재 필요한 글자
+// 필요한 글자
 // =====================================================
 
 function getRequiredLetter() {
@@ -280,12 +278,14 @@ function getRequiredLetter() {
         return requiredLetterText.textContent;
     }
 
-    return currentWord[currentWord.length - 1];
+    return currentWord[
+        currentWord.length - 1
+    ];
 }
 
 
 // =====================================================
-// 플레이어 단어 입력
+// 플레이어 단어 제출
 // =====================================================
 
 function submitWord() {
@@ -297,7 +297,6 @@ function submitWord() {
 
     const word =
         wordInput.value.trim();
-
 
     wordInput.value = "";
 
@@ -314,10 +313,7 @@ function submitWord() {
     }
 
 
-    // -------------------------------------------------
-    // 이미 사용한 단어
-    // -------------------------------------------------
-
+    // 이미 사용
     if (usedWords.includes(word)) {
 
         message.textContent =
@@ -327,10 +323,7 @@ function submitWord() {
     }
 
 
-    // -------------------------------------------------
-    // 사전에 없는 단어
-    // -------------------------------------------------
-
+    // 사전에 없음
     if (!dictionarySet.has(word)) {
 
         message.textContent =
@@ -340,12 +333,10 @@ function submitWord() {
     }
 
 
-    // -------------------------------------------------
-    // 첫 글자 검사
-    // -------------------------------------------------
-
+    // 필요한 글자
     const requiredLetter =
         getRequiredLetter();
+
 
     if (word[0] !== requiredLetter) {
 
@@ -356,29 +347,23 @@ function submitWord() {
     }
 
 
-    // -------------------------------------------------
-    // 첫 번째 수에는 한방/공격 금지
-    // -------------------------------------------------
-
+    // 첫 단어 한방 금지
     if (
         firstMove &&
         isOneShotWord(word)
     ) {
 
         message.textContent =
-            "처음에 사용할 수 없는 단어입니다.";
+            "처음에는 한방 단어를 사용할 수 없습니다.";
 
         return;
     }
 
 
-    // -------------------------------------------------
     // 정상 입력
-    // -------------------------------------------------
-
     stopTimer();
 
-    useWord(word, "player");
+    useWord(word);
 
     firstMove = false;
 
@@ -394,7 +379,7 @@ function submitWord() {
 // 단어 사용
 // =====================================================
 
-function useWord(word, owner) {
+function useWord(word) {
 
     currentWord = word;
 
@@ -428,24 +413,25 @@ function botTurn() {
         chooseBotWord();
 
 
-    // 낼 단어가 없음
+    // 봇이 낼 단어가 없음
     if (!botWord) {
 
         endGame(
             "승리!",
-            "봇이 낼 수 있는 단어가 없습니다."
+            "봇이 이어갈 단어를 찾지 못했습니다."
         );
 
         return;
     }
 
 
-    useWord(botWord, "bot");
+    // 봇 단어 사용
+    useWord(botWord);
 
     firstMove = false;
 
 
-    // 다시 플레이어
+    // 플레이어 턴
     setPlayerTurn();
 }
 
@@ -460,183 +446,108 @@ function chooseBotWord() {
         getRequiredLetter();
 
 
+    // 필요한 글자로 시작하는 단어
     let candidates =
         wordsByFirstLetter.get(requiredLetter) || [];
 
 
     // 이미 사용한 단어 제거
-    candidates = candidates.filter(
-        word => !usedWords.includes(word)
-    );
+    candidates =
+        candidates.filter(
+            word => !usedWords.includes(word)
+        );
 
 
+    // 후보가 하나도 없음
     if (candidates.length === 0) {
+
         return null;
     }
 
 
-    // -------------------------------------------------
-    // 첫 수에는 한방/공격 금지
-    // -------------------------------------------------
+    // =================================================
+    // 첫 번째 수
+    // =================================================
 
     if (firstMove) {
 
-        candidates =
-            candidates.filter(word =>
-                !isOneShotWord(word) &&
-                !isAttackWord(word)
+        const safeCandidates =
+            candidates.filter(
+                word => !isOneShotWord(word)
             );
-    }
 
 
-    if (candidates.length === 0) {
-        return null;
-    }
+        // 안전한 단어가 있으면 사용
+        if (safeCandidates.length > 0) {
 
-
-    // -------------------------------------------------
-    // 모든 후보 분석
-    // -------------------------------------------------
-
-    const analyzed = candidates.map(word => {
-
-        return {
-            word: word,
-            category: analyzeWord(word),
-            score: getWordScore(word)
-        };
-    });
-
-
-    // -------------------------------------------------
-    // 우선순위
-    //
-    // 한방 > 공격 > 루트 > 패배
-    // -------------------------------------------------
-
-    const priority = {
-        "한방": 4,
-        "공격": 3,
-        "루트": 2,
-        "패배": 1
-    };
-
-
-    analyzed.sort((a, b) => {
-
-        const priorityDifference =
-            priority[b.category] -
-            priority[a.category];
-
-
-        if (priorityDifference !== 0) {
-            return priorityDifference;
+            candidates =
+                safeCandidates;
         }
-
-
-        // 같은 분류라면 점수가 높은 것
-        return b.score - a.score;
-    });
-
-
-    return analyzed[0].word;
-}
-
-
-// =====================================================
-// 단어 분류
-// =====================================================
-
-function analyzeWord(word) {
-
-    // 한방
-    if (isOneShotWord(word)) {
-        return "한방";
     }
 
 
-    // 공격
-    if (isAttackWord(word)) {
-        return "공격";
-    }
+    // =================================================
+    // 후보 점수 계산
+    // =================================================
+
+    const analyzed =
+        candidates.map(word => {
+
+            const nextWords =
+                getAvailableWords(
+                    word[word.length - 1],
+                    new Set([
+                        ...usedWords,
+                        word
+                    ])
+                );
 
 
-    // -------------------------------------------------
-    // 이후 몇 수를 계산해서 승패 가능성 판단
-    // -------------------------------------------------
-
-    const result =
-        searchPosition(
-            word,
-            5,
-            new Set([...usedWords, word])
-        );
+            let score = 0;
 
 
-    if (result === "WIN") {
-        return "공격";
-    }
+            // 상대 선택지가 적을수록 좋음
+            score +=
+                1000 -
+                (nextWords.length * 10);
 
 
-    if (result === "LOSE") {
-        return "패배";
-    }
+            // 한방 단어
+            if (nextWords.length === 0) {
+
+                score += 10000;
+            }
 
 
-    return "루트";
-}
+            // 공격 단어
+            else if (nextWords.length <= 2) {
+
+                score += 3000;
+            }
 
 
-// =====================================================
-// 한방단어
-// =====================================================
-
-function isOneShotWord(word) {
-
-    const last =
-        word[word.length - 1];
+            // 같은 점수만 계속 나오지 않도록
+            // 작은 랜덤값 추가
+            score +=
+                Math.random() * 100;
 
 
-    const nextWords =
-        getAvailableWords(
-            last,
-            new Set([...usedWords, word])
-        );
+            return {
+                word: word,
+                score: score
+            };
+        });
 
 
-    return nextWords.length === 0;
-}
-
-
-// =====================================================
-// 공격단어
-// =====================================================
-
-function isAttackWord(word) {
-
-    const last =
-        word[word.length - 1];
-
-
-    const nextWords =
-        getAvailableWords(
-            last,
-            new Set([...usedWords, word])
-        );
-
-
-    // 상대가 선택할 수 있는 단어가 적을수록
-    // 공격적인 단어로 취급
-    //
-    // 1~2개 → 공격
-    //
-    // 0개는 한방에서 이미 처리
-    //
-
-    return (
-        nextWords.length >= 1 &&
-        nextWords.length <= 2
+    // 점수 높은 순
+    analyzed.sort(
+        (a, b) =>
+            b.score - a.score
     );
+
+
+    // 최고 점수 단어
+    return analyzed[0].word;
 }
 
 
@@ -644,7 +555,10 @@ function isAttackWord(word) {
 // 사용 가능한 다음 단어
 // =====================================================
 
-function getAvailableWords(letter, used) {
+function getAvailableWords(
+    letter,
+    used
+) {
 
     const words =
         wordsByFirstLetter.get(letter) || [];
@@ -657,97 +571,10 @@ function getAvailableWords(letter, used) {
 
 
 // =====================================================
-// 게임 탐색 AI
-// =====================================================
-//
-// WIN  = 현재 봇에게 유리
-// LOSE = 현재 봇에게 불리
-// DRAW = 확실하게 판단하기 어려움
-//
-// depth가 너무 높으면 54만 단어에서
-// 계산량이 폭발할 수 있기 때문에 제한함.
+// 한방 단어 확인
 // =====================================================
 
-const searchMemo = new Map();
-
-
-function searchPosition(
-    word,
-    depth,
-    used
-) {
-
-    if (depth <= 0) {
-        return "DRAW";
-    }
-
-
-    const last =
-        word[word.length - 1];
-
-
-    const nextWords =
-        getAvailableWords(last, used);
-
-
-    // 다음 단어가 없다
-    if (nextWords.length === 0) {
-        return "LOSE";
-    }
-
-
-    let hasDraw = false;
-
-
-    // 후보를 최대 20개까지만 검색
-    // 브라우저 속도 보호
-    const candidates =
-        nextWords.slice(0, 20);
-
-
-    for (const nextWord of candidates) {
-
-        const nextUsed =
-            new Set(used);
-
-        nextUsed.add(nextWord);
-
-
-        const result =
-            searchPosition(
-                nextWord,
-                depth - 1,
-                nextUsed
-            );
-
-
-        // 상대가 LOSE가 되는 수를 찾으면
-        // 현재 플레이어에게 WIN
-        if (result === "LOSE") {
-            return "WIN";
-        }
-
-
-        if (result === "DRAW") {
-            hasDraw = true;
-        }
-    }
-
-
-    if (hasDraw) {
-        return "DRAW";
-    }
-
-
-    return "LOSE";
-}
-
-
-// =====================================================
-// 봇 점수
-// =====================================================
-
-function getWordScore(word) {
+function isOneShotWord(word) {
 
     const last =
         word[word.length - 1];
@@ -756,34 +583,41 @@ function getWordScore(word) {
     const nextWords =
         getAvailableWords(
             last,
-            new Set([...usedWords, word])
+            new Set([
+                ...usedWords,
+                word
+            ])
         );
 
 
-    // 상대 선택지가 적을수록 높은 점수
-    let score =
-        1000 - nextWords.length;
+    return nextWords.length === 0;
+}
 
 
-    // 탐색으로 미래 승리 가능성 계산
-    const result =
-        searchPosition(
-            word,
-            4,
-            new Set([...usedWords, word])
+// =====================================================
+// 공격 단어 확인
+// =====================================================
+
+function isAttackWord(word) {
+
+    const last =
+        word[word.length - 1];
+
+
+    const nextWords =
+        getAvailableWords(
+            last,
+            new Set([
+                ...usedWords,
+                word
+            ])
         );
 
 
-    if (result === "WIN") {
-        score += 500;
-    }
-
-    else if (result === "LOSE") {
-        score -= 500;
-    }
-
-
-    return score;
+    return (
+        nextWords.length >= 1 &&
+        nextWords.length <= 2
+    );
 }
 
 
@@ -801,22 +635,23 @@ function startTimer() {
         timeLeft;
 
 
-    timer = setInterval(() => {
+    timer =
+        setInterval(() => {
 
-        timeLeft--;
+            timeLeft--;
 
-        timerText.textContent =
-            timeLeft;
+            timerText.textContent =
+                timeLeft;
 
 
-        if (timeLeft <= 0) {
+            if (timeLeft <= 0) {
 
-            stopTimer();
+                stopTimer();
 
-            timeOut();
-        }
+                timeOut();
+            }
 
-    }, 1000);
+        }, 1000);
 }
 
 
@@ -866,7 +701,6 @@ function timeOut() {
     }
 
 
-    // 목숨 하나 잃고 다시 플레이
     setTimeout(() => {
 
         message.textContent =
@@ -886,7 +720,9 @@ function updateLives() {
 
     livesText.textContent =
         "❤️".repeat(lives) +
-        "🖤".repeat(MAX_LIVES - lives);
+        "🖤".repeat(
+            MAX_LIVES - lives
+        );
 }
 
 
@@ -904,11 +740,14 @@ function updateHistory() {
         const element =
             document.createElement("span");
 
+
         element.className =
             "historyWord";
 
+
         element.textContent =
             word;
+
 
         history.appendChild(element);
     }
@@ -951,6 +790,7 @@ wordInput.addEventListener(
     function(event) {
 
         if (event.key === "Enter") {
+
             submitWord();
         }
 
