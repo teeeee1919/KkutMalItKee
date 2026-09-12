@@ -3,65 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>끝말잇기 봇</title>
+    <title>끝말잇기</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="game-container">
-
-    <h1>끝말잇기 🤖</h1>
+<div class="container">
 
     <!-- 시작 화면 -->
-    <div id="startScreen">
-        <h2>누가 먼저 할까요?</h2>
+    <section id="startScreen">
+        <h1>끝말잇기</h1>
 
-        <div class="mode-buttons">
-            <button onclick="startGame('first')">선공</button>
-            <button onclick="startGame('second')">후공</button>
+        <p class="startLetter">
+            시작 글자:
+            <strong id="startLetter">?</strong>
+        </p>
+
+        <div class="modeButtons">
+            <button onclick="startGame('player')">선공</button>
+            <button onclick="startGame('bot')">후공</button>
             <button onclick="startGame('random')">랜덤</button>
         </div>
-    </div>
+    </section>
+
 
     <!-- 게임 화면 -->
-    <div id="gameScreen" class="hidden">
+    <section id="gameScreen" class="hidden">
 
-        <div class="status">
-            <div>목숨: <span id="lives">❤️ ❤️</span></div>
-            <div>제한시간: <span id="timer">20</span>초</div>
+        <div class="top">
+
+            <div>
+                목숨:
+                <span id="lives">❤️❤️</span>
+            </div>
+
+            <div>
+                제한시간:
+                <span id="timer">20</span>
+            </div>
+
         </div>
 
-        <div class="current-box">
+        <div class="required">
+            <p>현재 글자</p>
+            <h2 id="requiredLetter">?</h2>
+        </div>
+
+        <div class="current">
             <p>현재 단어</p>
             <h2 id="currentWord">-</h2>
-            <p id="nextLetter"></p>
+        </div>
+
+        <div id="turnMessage" class="turnMessage">
+            준비 중...
+        </div>
+
+        <div class="inputArea">
+
+            <input
+                id="wordInput"
+                type="text"
+                autocomplete="off"
+                placeholder="단어를 입력하세요"
+            >
+
+            <button id="submitButton" onclick="submitWord()">
+                입력
+            </button>
+
         </div>
 
         <div id="message"></div>
 
-        <div class="input-area">
-            <input
-                type="text"
-                id="wordInput"
-                placeholder="단어를 입력하세요"
-                autocomplete="off"
-            >
-            <button onclick="submitWord()">확인</button>
-        </div>
-
-        <div class="word-history">
+        <div class="historyBox">
             <h3>사용한 단어</h3>
-            <div id="wordList"></div>
+            <div id="history"></div>
         </div>
 
-    </div>
+    </section>
 
-    <!-- 게임 종료 -->
-    <div id="endScreen" class="hidden">
-        <h2 id="resultText"></h2>
-        <button onclick="location.reload()">다시 하기</button>
-    </div>
+
+    <!-- 결과 화면 -->
+    <section id="endScreen" class="hidden">
+
+        <h1 id="resultTitle"></h1>
+
+        <p id="resultMessage"></p>
+
+        <button onclick="location.reload()">
+            다시 하기
+        </button>
+
+    </section>
 
 </div>
 
