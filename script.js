@@ -309,7 +309,7 @@ function submitWord() {
     // 첫 번째 단어에서 한방 / 공격단어 금지
     // ----------------------------------------
 
-    if (firstPlayerWord) {
+    if (firstMove) {
 
         if (
             oneShotWords.includes(word) ||
@@ -332,7 +332,7 @@ function submitWord() {
 
     usedWords.push(word);
 
-    firstPlayerWord = false;
+    firstMove = false;
 
     addWordToHistory(word);
 
