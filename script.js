@@ -288,6 +288,15 @@ function getRequiredLetter() {
 }
 
 
+
+
+    const possibleLetters =
+        doubleSound[requiredLetter] || [];
+
+    return possibleLetters.includes(word[0]);
+}
+
+
 // =====================================================
 // 플레이어 단어 제출
 // =====================================================
