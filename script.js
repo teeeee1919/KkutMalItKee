@@ -100,8 +100,13 @@ const ATTACK_LEVELS = {
 const attackLevelMap = new Map();
 
 for (const level of Object.keys(ATTACK_LEVELS)) {
+
     for (const letter of ATTACK_LEVELS[level]) {
-        attackLevelMap.set(letter, Number(level));
+
+        attackLevelMap.set(
+            letter,
+            Number(level)
+        );
     }
 }
 
@@ -138,83 +143,443 @@ let round = 1;
 // 화면 요소
 // =====================================================
 
-const startScreen = document.getElementById("startScreen");
-const gameScreen = document.getElementById("gameScreen");
-const endScreen = document.getElementById("endScreen");
+const startScreen =
+    document.getElementById("startScreen");
 
-const startLetterText = document.getElementById("startLetter");
-const requiredLetterText = document.getElementById("requiredLetter");
+const gameScreen =
+    document.getElementById("gameScreen");
 
-const currentWordText = document.getElementById("currentWord");
+const endScreen =
+    document.getElementById("endScreen");
 
-const livesText = document.getElementById("lives");
-const timerText = document.getElementById("timer");
+const startLetterText =
+    document.getElementById("startLetter");
 
-const turnMessage = document.getElementById("turnMessage");
-const message = document.getElementById("message");
+const requiredLetterText =
+    document.getElementById("requiredLetter");
 
-const wordInput = document.getElementById("wordInput");
-const submitButton = document.getElementById("submitButton");
+const currentWordText =
+    document.getElementById("currentWord");
 
-const history = document.getElementById("history");
+const livesText =
+    document.getElementById("lives");
+
+const timerText =
+    document.getElementById("timer");
+
+const turnMessage =
+    document.getElementById("turnMessage");
+
+const message =
+    document.getElementById("message");
+
+const wordInput =
+    document.getElementById("wordInput");
+
+const submitButton =
+    document.getElementById("submitButton");
+
+const history =
+    document.getElementById("history");
 
 
 // =====================================================
-// 사전 불러오기
+// "현재 글자" → "시작단어"
 // =====================================================
 
-fetch("words.txt")
-    .then(response => {
+if (requiredLetterText) {
 
-        if (!response.ok) {
-            throw new Error("words.txt를 불러오지 못했습니다.");
+    const parent =
+        requiredLetterText.parentElement;
+
+    if (parent) {
+
+        const label =
+            parent.querySelector("p");
+
+        if (label) {
+            label.textContent = "시작단어";
         }
+    }
+}
 
-        return response.text();
-    })
 
-    .then(text => {
+// =====================================================
+// 두음법칙 글자 계산
+// =====================================================
+//
+// 표준적인 두음법칙을 기준으로 계산함.
+//
+// ㄴ → ㅇ
+// 니 → 이
+// 녀 → 여
+// 뇨 → 요
+// 뉴 → 유
+// 냐 → 야
+// 녜 → 예
+//
+// ㄹ → ㄴ
+// 라 → 나
+// 래 → 내
+// 로 → 노
+// 뢰 → 뇌
+// 루 → 누
+// 르 → 느
+//
+// ㄹ → ㅇ
+// 랴 → 야
+// 려 → 여
+// 력 → 역
+// 련 → 연
+// 렬 → 열
+// 례 → 예
+// 료 → 요
+// 류 → 유
+// 리 → 이
+//
+// 받침이 있으면 받침도 그대로 유지
+// 륨 → 윰
+// 력 → 역
+// 름 → 음
+//
 
-        dictionary = text
-            .split(/\r?\n/)
-            .map(word => word.trim())
-            .filter(word => word.length > 0);
 
-        dictionary = [...new Set(dictionary)];
+function makeSyllable(
+    initial,
+    vowel,
+    finalSound
+) {
 
-        dictionarySet = new Set(dictionary);
+    return String.fromCharCode(
+        0xAC00 +
+        initial * 588 +
+        vowel * 28 +
+        finalSound
+    );
+}
 
-        wordsByFirstLetter = new Map();
 
-        for (const word of dictionary) {
+function getDuumLetters(letter) {
 
-            const first = word[0];
+    if (!letter) {
+        return [];
+    }
 
-            if (!wordsByFirstLetter.has(first)) {
-                wordsByFirstLetter.set(first, []);
-            }
+    const result = [letter];
 
-            wordsByFirstLetter
-                .get(first)
-                .push(word);
-        }
+    const code =
+        letter.charCodeAt(0);
 
-        console.log(
-            "단어 로딩 완료:",
-            dictionary.length,
-            "개"
+    // 한글 음절이 아니면 그대로
+    if (
+        code < 0xAC00 ||
+        code > 0xD7A3
+    ) {
+        return result;
+    }
+
+    const index =
+        code - 0xAC00;
+
+    const initial =
+        Math.floor(index / 588);
+
+    const vowel =
+        Math.floor(
+            (index % 588) / 28
         );
-    })
 
-    .catch(error => {
+    const finalSound =
+        index % 28;
 
-        console.error(error);
 
-        alert(
-            "words.txt를 불러오지 못했습니다.\n" +
-            "GitHub에 words.txt가 제대로 올라가 있는지 확인해주세요."
+    // -------------------------------------------------
+    // 초성 번호
+    //
+    // ㄱ 0
+    // ㄲ 1
+    // ㄴ 2
+    // ㄷ 3
+    // ㄸ 4
+    // ㄹ 5
+    // ...
+    // ㅇ 11
+    // -------------------------------------------------
+
+
+    // -------------------------------------------------
+    // ㄴ → ㅇ
+    //
+    // 니 → 이
+    // 녀 → 여
+    // 뇨 → 요
+    // 뉴 → 유
+    // 냐 → 야
+    // 녜 → 예
+    // -------------------------------------------------
+
+    const nToIeungVowels = [
+        2,   // ㅑ
+        6,   // ㅕ
+        7,   // ㅖ
+        12,  // ㅛ
+        13,  // ㅠ
+        20   // ㅣ
+    ];
+
+
+    if (
+        initial === 2 &&
+        nToIeungVowels.includes(vowel)
+    ) {
+
+        result.push(
+            makeSyllable(
+                11,
+                vowel,
+                finalSound
+            )
         );
-    });
+    }
+
+
+    // -------------------------------------------------
+    // ㄹ → ㅇ
+    //
+    // 랴 → 야
+    // 려 → 여
+    // 례 → 예
+    // 료 → 요
+    // 류 → 유
+    // 리 → 이
+    //
+    // 륨 → 윰
+    // 력 → 역
+    // -------------------------------------------------
+
+    if (
+        initial === 5 &&
+        nToIeungVowels.includes(vowel)
+    ) {
+
+        result.push(
+            makeSyllable(
+                11,
+                vowel,
+                finalSound
+            )
+        );
+    }
+
+
+    // -------------------------------------------------
+    // ㄹ → ㄴ
+    //
+    // 라 → 나
+    // 래 → 내
+    // 로 → 노
+    // 뢰 → 뇌
+    // 루 → 누
+    // 르 → 느
+    //
+    // 단, ㅣ 계열은 위의 ㄹ → ㅇ을 사용
+    // -------------------------------------------------
+
+    const rieulToNieunVowels = [
+        0,   // ㅏ
+        1,   // ㅐ
+        4,   // ㅓ
+        5,   // ㅔ
+        8,   // ㅗ
+        13,  // ㅜ
+        18   // ㅡ
+        21   // ㅢ
+    ];
+
+
+    if (
+        initial === 5 &&
+        rieulToNieunVowels.includes(vowel)
+    ) {
+
+        result.push(
+            makeSyllable(
+                2,
+                vowel,
+                finalSound
+            )
+        );
+    }
+
+
+    return [
+        ...new Set(result)
+    ];
+}
+
+
+// =====================================================
+// 화면에 표시할 시작단어
+// =====================================================
+//
+// 예:
+// 니 → 니(이)
+// 륨 → 륨(윰)
+// 력 → 력(역)
+// 라 → 라(나)
+//
+
+
+function formatRequiredLetter(letter) {
+
+    const letters =
+        getDuumLetters(letter);
+
+    if (letters.length <= 1) {
+        return letter;
+    }
+
+    return (
+        letters[0] +
+        "(" +
+        letters.slice(1).join("/") +
+        ")"
+    );
+}
+
+
+// =====================================================
+// 시작단어 화면 업데이트
+// =====================================================
+
+function updateRequiredLetterDisplay(letter) {
+
+    requiredLetterText.textContent =
+        formatRequiredLetter(letter);
+}
+
+
+// =====================================================
+// 이어지는 단어인지 확인
+// =====================================================
+
+function canStartWith(
+    word,
+    requiredLetter
+) {
+
+    if (
+        !word ||
+        !requiredLetter
+    ) {
+        return false;
+    }
+
+    return getDuumLetters(
+        requiredLetter
+    ).includes(
+        word[0]
+    );
+}
+
+
+// =====================================================
+// 사용 가능한 단어
+// =====================================================
+
+function getAvailableWords(
+    letter,
+    used
+) {
+
+    const possibleLetters =
+        getDuumLetters(letter);
+
+    let words = [];
+
+    for (
+        const possibleLetter
+        of possibleLetters
+    ) {
+
+        const list =
+            wordsByFirstLetter.get(
+                possibleLetter
+            ) || [];
+
+        words.push(...list);
+    }
+
+    return [
+        ...new Set(words)
+    ].filter(
+        word => !used.has(word)
+    );
+}
+
+
+// =====================================================
+// 공격력 확인
+// =====================================================
+
+function getAttackLevel(word) {
+
+    if (!word) {
+        return Infinity;
+    }
+
+    const last =
+        word[word.length - 1];
+
+    return (
+        attackLevelMap.get(last)
+        ?? Infinity
+    );
+}
+
+
+// =====================================================
+// 한방 단어
+// =====================================================
+
+function isOneShotWord(word) {
+
+    if (!word) {
+        return false;
+    }
+
+    const last =
+        word[word.length - 1];
+
+    const nextWords =
+        getAvailableWords(
+            last,
+            new Set([
+                ...usedWords,
+                word
+            ])
+        );
+
+    return (
+        nextWords.length === 0
+    );
+}
+
+
+// =====================================================
+// 공격 단어인지
+// =====================================================
+
+function isAttackWord(word) {
+
+    if (!word) {
+        return false;
+    }
+
+    return attackLevelMap.has(
+        word[word.length - 1]
+    );
+}
 
 
 // =====================================================
@@ -225,55 +590,91 @@ function startGame(mode) {
 
     if (dictionary.length === 0) {
 
-        alert("아직 단어 사전이 로딩되지 않았습니다.");
+        alert(
+            "아직 단어 사전이 로딩되지 않았습니다."
+        );
 
         return;
     }
+
 
     currentWord = "";
     usedWords = [];
 
     lives = MAX_LIVES;
+
     round = 1;
 
     firstMove = true;
+
     gameStarted = true;
+
 
     const startingLetter =
         START_LETTERS[
             Math.floor(
-                Math.random() * START_LETTERS.length
+                Math.random() *
+                START_LETTERS.length
             )
         ];
 
-    startLetterText.textContent = startingLetter;
-    requiredLetterText.textContent = startingLetter;
+
+    startLetterText.textContent =
+        startingLetter;
+
+    updateRequiredLetterDisplay(
+        startingLetter
+    );
+
 
     if (mode === "player") {
+
         playerTurn = true;
+
     }
     else if (mode === "bot") {
+
         playerTurn = false;
+
     }
     else {
-        playerTurn = Math.random() < 0.5;
+
+        playerTurn =
+            Math.random() < 0.5;
     }
 
-    startScreen.classList.add("hidden");
-    endScreen.classList.add("hidden");
-    gameScreen.classList.remove("hidden");
+
+    startScreen.classList.add(
+        "hidden"
+    );
+
+    endScreen.classList.add(
+        "hidden"
+    );
+
+    gameScreen.classList.remove(
+        "hidden"
+    );
+
 
     updateLives();
+
     updateHistory();
 
     currentWordText.textContent = "";
+
     message.textContent = "";
 
+
     if (playerTurn) {
+
         setPlayerTurn();
+
     }
     else {
+
         setBotTurn();
+
 
         setTimeout(() => {
 
@@ -294,9 +695,11 @@ function setPlayerTurn() {
 
     playerTurn = true;
 
-    turnMessage.textContent = "당신의 턴";
+    turnMessage.textContent =
+        "당신의 턴";
 
     submitButton.disabled = false;
+
     wordInput.disabled = false;
 
     wordInput.focus();
@@ -313,9 +716,11 @@ function setBotTurn() {
 
     playerTurn = false;
 
-    turnMessage.textContent = "봇이 생각 중...";
+    turnMessage.textContent =
+        "봇이 생각 중...";
 
     submitButton.disabled = true;
+
     wordInput.disabled = true;
 
     stopTimer();
@@ -325,195 +730,22 @@ function setBotTurn() {
 // =====================================================
 // 필요한 글자
 // =====================================================
+//
+// 화면에는 니(이)가 보여도
+// 실제 계산에는 원래 글자인 "니"만 사용
+//
 
 function getRequiredLetter() {
 
     if (currentWord === "") {
-        return requiredLetterText.textContent;
+
+        return startLetterText.textContent;
     }
 
-    return currentWord[currentWord.length - 1];
-}
-
-
-// =====================================================
-// 두음법칙
-// =====================================================
-
-function getDuumLetters(letter) {
-
-    const result = [letter];
-
-    if (!letter) {
-        return result;
-    }
-
-    const code = letter.charCodeAt(0);
-
-    if (code < 0xAC00 || code > 0xD7A3) {
-        return result;
-    }
-
-    const index = code - 0xAC00;
-
-    const initial = Math.floor(index / 588);
-
-    const vowel =
-        Math.floor(
-            (index % 588) / 28
-        );
-
-    const finalSound = index % 28;
-
-
-    // ㄴ → ㅇ
-    const nToIeungVowels = [
-        2, 6, 7, 12, 13, 20
-    ];
-
-    if (
-        initial === 2 &&
-        nToIeungVowels.includes(vowel)
-    ) {
-
-        const newCode =
-            0xAC00 +
-            11 * 588 +
-            vowel * 28 +
-            finalSound;
-
-        result.push(
-            String.fromCharCode(newCode)
-        );
-    }
-
-
-    // ㄹ → ㅇ / ㄴ
-    if (initial === 5) {
-
-        if (
-            nToIeungVowels.includes(vowel)
-        ) {
-
-            const newCode =
-                0xAC00 +
-                11 * 588 +
-                vowel * 28 +
-                finalSound;
-
-            result.push(
-                String.fromCharCode(newCode)
-            );
-        }
-
-        const rieulToNieunVowels = [
-            0, 1, 8, 9, 13, 18
-        ];
-
-        if (
-            rieulToNieunVowels.includes(vowel)
-        ) {
-
-            const newCode =
-                0xAC00 +
-                2 * 588 +
-                vowel * 28 +
-                finalSound;
-
-            result.push(
-                String.fromCharCode(newCode)
-            );
-        }
-    }
-
-    return [...new Set(result)];
-}
-
-
-// =====================================================
-// 이어지는 단어인지 확인
-// =====================================================
-
-function canStartWith(word, requiredLetter) {
-
-    if (!word || !requiredLetter) {
-        return false;
-    }
-
-    return getDuumLetters(requiredLetter)
-        .includes(word[0]);
-}
-
-
-// =====================================================
-// 사용 가능한 단어
-// =====================================================
-
-function getAvailableWords(letter, used) {
-
-    const possibleLetters =
-        getDuumLetters(letter);
-
-    let words = [];
-
-    for (const possibleLetter of possibleLetters) {
-
-        const list =
-            wordsByFirstLetter.get(possibleLetter) || [];
-
-        words.push(...list);
-    }
-
-    return [
-        ...new Set(words)
-    ].filter(word => !used.has(word));
-}
-
-
-// =====================================================
-// 공격력 확인
-// =====================================================
-
-function getAttackLevel(word) {
-
-    if (!word) {
-        return Infinity;
-    }
-
-    const last =
-        word[word.length - 1];
-
-    return attackLevelMap.get(last) ?? Infinity;
-}
-
-
-// =====================================================
-// 한방 단어
-// =====================================================
-
-function isOneShotWord(word) {
-
-    const nextWords =
-        getAvailableWords(
-            word[word.length - 1],
-            new Set([
-                ...usedWords,
-                word
-            ])
-        );
-
-    return nextWords.length === 0;
-}
-
-
-// =====================================================
-// 공격 단어인지
-// =====================================================
-
-function isAttackWord(word) {
-
-    return attackLevelMap.has(
-        word[word.length - 1]
+    return (
+        currentWord[
+            currentWord.length - 1
+        ]
     );
 }
 
@@ -524,14 +756,19 @@ function isAttackWord(word) {
 
 function submitWord() {
 
-    if (!playerTurn || !gameStarted) {
+    if (
+        !playerTurn ||
+        !gameStarted
+    ) {
         return;
     }
+
 
     const word =
         wordInput.value.trim();
 
     wordInput.value = "";
+
     message.textContent = "";
 
 
@@ -544,7 +781,9 @@ function submitWord() {
     }
 
 
-    if (usedWords.includes(word)) {
+    if (
+        usedWords.includes(word)
+    ) {
 
         message.textContent =
             "이미 사용한 단어입니다.";
@@ -553,7 +792,9 @@ function submitWord() {
     }
 
 
-    if (!dictionarySet.has(word)) {
+    if (
+        !dictionarySet.has(word)
+    ) {
 
         message.textContent =
             "존재하지 않는 단어입니다.";
@@ -566,7 +807,16 @@ function submitWord() {
         getRequiredLetter();
 
 
-    if (!canStartWith(word, requiredLetter)) {
+    // -------------------------------------------------
+    // 두음법칙 적용
+    // -------------------------------------------------
+
+    if (
+        !canStartWith(
+            word,
+            requiredLetter
+        )
+    ) {
 
         message.textContent =
             "단어의 첫 글자가 맞지 않습니다.";
@@ -575,10 +825,15 @@ function submitWord() {
     }
 
 
-    // 첫 턴에는 공격 단어 + 한방 단어 금지
+    // -------------------------------------------------
+    // 첫 턴 공격 / 한방 금지
+    // -------------------------------------------------
+
     if (firstMove) {
 
-        if (isOneShotWord(word)) {
+        if (
+            isOneShotWord(word)
+        ) {
 
             message.textContent =
                 "첫 턴에는 한방 단어를 사용할 수 없습니다.";
@@ -586,7 +841,10 @@ function submitWord() {
             return;
         }
 
-        if (isAttackWord(word)) {
+
+        if (
+            isAttackWord(word)
+        ) {
 
             message.textContent =
                 "첫 턴에는 공격 단어를 사용할 수 없습니다.";
@@ -603,6 +861,7 @@ function submitWord() {
     firstMove = false;
 
     setBotTurn();
+
 
     setTimeout(() => {
 
@@ -624,10 +883,16 @@ function useWord(word) {
 
     usedWords.push(word);
 
-    currentWordText.textContent = word;
+    currentWordText.textContent =
+        word;
 
-    requiredLetterText.textContent =
-        word[word.length - 1];
+
+    // 마지막 글자를 기준으로
+    // 두음법칙 표시
+    updateRequiredLetterDisplay(
+        word[word.length - 1]
+    );
+
 
     updateHistory();
 }
@@ -642,6 +907,7 @@ function botTurn() {
     if (!gameStarted) {
         return;
     }
+
 
     const botWord =
         chooseBotWord();
@@ -675,6 +941,7 @@ function chooseBotWord() {
     const requiredLetter =
         getRequiredLetter();
 
+
     let candidates =
         getAvailableWords(
             requiredLetter,
@@ -687,22 +954,25 @@ function chooseBotWord() {
     }
 
 
-    // 첫 턴에는 공격/한방 단어 제외
+    // -------------------------------------------------
+    // 첫 턴에는 공격 / 한방 단어 절대 금지
+    // -------------------------------------------------
+
     if (firstMove) {
 
-        const safeCandidates =
-            candidates.filter(word => {
-
-                return (
+        candidates =
+            candidates.filter(
+                word =>
                     !isOneShotWord(word) &&
                     !isAttackWord(word)
-                );
-
-            });
+            );
 
 
-        if (safeCandidates.length > 0) {
-            candidates = safeCandidates;
+        // 안전한 단어가 하나도 없다면
+        // 봇이 공격단어를 억지로 선택하지 않도록
+        // null 처리
+        if (candidates.length === 0) {
+            return null;
         }
     }
 
@@ -712,52 +982,62 @@ function chooseBotWord() {
 
             const nextWords =
                 getAvailableWords(
-                    word[word.length - 1],
+                    word[
+                        word.length - 1
+                    ],
                     new Set([
                         ...usedWords,
                         word
                     ])
                 );
 
+
             let score = 0;
+
 
             const attackLevel =
                 getAttackLevel(word);
 
 
-            // =================================================
+            // -------------------------------------------------
             // 한방
-            // =================================================
+            // -------------------------------------------------
 
-            if (nextWords.length === 0) {
+            if (
+                nextWords.length === 0
+            ) {
 
                 score += 100000;
             }
 
 
-            // =================================================
+            // -------------------------------------------------
             // 공격 단어
-            // =================================================
+            // -------------------------------------------------
 
-            if (attackLevel !== Infinity) {
+            if (
+                attackLevel !== Infinity
+            ) {
 
-                // 2수짜리가 가장 강함
                 score +=
                     50000 -
                     attackLevel * 2500;
             }
 
 
-            // =================================================
+            // -------------------------------------------------
             // 일반 단어
-            // =================================================
+            // -------------------------------------------------
 
             score +=
                 5000 -
                 nextWords.length * 20;
 
 
+            // -------------------------------------------------
             // 약간의 랜덤
+            // -------------------------------------------------
+
             score +=
                 Math.random() * 100;
 
@@ -766,7 +1046,6 @@ function chooseBotWord() {
                 word,
                 score
             };
-
         });
 
 
@@ -790,16 +1069,22 @@ function startTimer() {
 
     timeLeft = TIME_LIMIT;
 
-    timerText.textContent = timeLeft;
+    timerText.textContent =
+        timeLeft;
+
 
     timer =
         setInterval(() => {
 
             timeLeft--;
 
-            timerText.textContent = timeLeft;
+            timerText.textContent =
+                timeLeft;
 
-            if (timeLeft <= 0) {
+
+            if (
+                timeLeft <= 0
+            ) {
 
                 stopTimer();
 
@@ -831,12 +1116,17 @@ function stopTimer() {
 
 function timeOut() {
 
-    if (!playerTurn || !gameStarted) {
+    if (
+        !playerTurn ||
+        !gameStarted
+    ) {
         return;
     }
 
+
     message.textContent =
         "시간 초과!";
+
 
     lives--;
 
@@ -860,8 +1150,10 @@ function timeOut() {
             return;
         }
 
+
         message.textContent =
             "목숨을 하나 잃었습니다.";
+
 
         setPlayerTurn();
 
@@ -878,6 +1170,7 @@ function giveUpRound() {
     if (!gameStarted) {
         return;
     }
+
 
     stopTimer();
 
@@ -900,6 +1193,7 @@ function giveUpRound() {
     round++;
 
     currentWord = "";
+
     usedWords = [];
 
     firstMove = true;
@@ -908,7 +1202,8 @@ function giveUpRound() {
     const startingLetter =
         START_LETTERS[
             Math.floor(
-                Math.random() * START_LETTERS.length
+                Math.random() *
+                START_LETTERS.length
             )
         ];
 
@@ -916,14 +1211,20 @@ function giveUpRound() {
     startLetterText.textContent =
         startingLetter;
 
-    requiredLetterText.textContent =
-        startingLetter;
+
+    updateRequiredLetterDisplay(
+        startingLetter
+    );
+
 
     currentWordText.textContent =
         "";
 
+
     message.textContent =
-        "라운드 " + round + " 시작!";
+        "라운드 " +
+        round +
+        " 시작!";
 
 
     updateHistory();
@@ -954,18 +1255,29 @@ function updateHistory() {
 
     history.innerHTML = "";
 
-    for (const word of usedWords) {
+
+    for (
+        const word
+        of usedWords
+    ) {
 
         const element =
-            document.createElement("span");
+            document.createElement(
+                "span"
+            );
+
 
         element.className =
             "historyWord";
 
+
         element.textContent =
             word;
 
-        history.appendChild(element);
+
+        history.appendChild(
+            element
+        );
     }
 }
 
@@ -974,19 +1286,34 @@ function updateHistory() {
 // 게임 종료
 // =====================================================
 
-function endGame(title, text) {
+function endGame(
+    title,
+    text
+) {
 
     gameStarted = false;
 
     stopTimer();
 
-    gameScreen.classList.add("hidden");
-    endScreen.classList.remove("hidden");
 
-    document.getElementById("resultTitle").textContent =
+    gameScreen.classList.add(
+        "hidden"
+    );
+
+    endScreen.classList.remove(
+        "hidden"
+    );
+
+
+    document.getElementById(
+        "resultTitle"
+    ).textContent =
         title;
 
-    document.getElementById("resultMessage").textContent =
+
+    document.getElementById(
+        "resultMessage"
+    ).textContent =
         text;
 }
 
@@ -999,7 +1326,10 @@ wordInput.addEventListener(
     "keydown",
     function(event) {
 
-        if (event.key === "Enter") {
+        if (
+            event.key === "Enter"
+        ) {
+
             submitWord();
         }
 
