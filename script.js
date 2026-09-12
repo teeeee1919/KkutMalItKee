@@ -185,7 +185,7 @@ let lives = 2;
 let timer = 20;
 let timerInterval = null;
 let playerTurn = false;
-let firstPlayerWord = true;
+let firstMove = true;
 
 
 // ========================================
