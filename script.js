@@ -364,14 +364,31 @@ function botTurn() {
 
 
     // 봇이 낼 수 있는 단어 찾기
-    const possibleWords = allWords.filter(word => {
+const possibleWords = allWords.filter(word => {
 
-        return (
-            word.charAt(0) === requiredLetter &&
-            !usedWords.includes(word)
-        );
+    // 현재 글자로 시작해야 함
+    if (word.charAt(0) !== requiredLetter) {
+        return false;
+    }
 
-    });
+    // 이미 사용한 단어는 사용 불가
+    if (usedWords.includes(word)) {
+        return false;
+    }
+
+    // 첫 번째 단어에서는 한방단어와 공격단어 사용 불가
+    if (
+        firstMove &&
+        (
+            oneShotWords.includes(word) ||
+            attackWords.includes(word)
+        )
+    ) {
+        return false;
+    }
+
+    return true;
+});
 
 
     // ----------------------------------------
@@ -396,9 +413,11 @@ function botTurn() {
         possibleWords[randomIndex];
 
 
-    currentWord = botWord;
+    currentWord = botWords
 
     usedWords.push(botWord);
+
+    firstMove = false;
 
     addWordToHistory(botWord);
 
