@@ -244,6 +244,7 @@ function startGame(mode) {
 
     else {
         showMessage("봇이 생각 중...");
+        startTimer();
         setTimeout(botTurn, 1000);
     }
 }
@@ -259,9 +260,7 @@ function submitWord() {
         return;
     }
 
-    const input =
-        document.getElementById("wordInput");
-
+    const input = document.getElementById("wordInput");
     const word = input.value.trim();
 
     input.value = "";
@@ -270,66 +269,41 @@ function submitWord() {
         return;
     }
 
-
-    // ----------------------------------------
     // 이미 사용한 단어
-    // ----------------------------------------
-
     if (usedWords.includes(word)) {
         showMessage("이미 사용한 단어입니다.");
         return;
     }
 
-
-    // ----------------------------------------
     // 존재하지 않는 단어
-    // ----------------------------------------
-
     if (!allWords.includes(word)) {
         showMessage("존재하지 않는 단어입니다.");
         return;
     }
 
-
-    // ----------------------------------------
-    // 첫 글자 검사
-    // ----------------------------------------
-
-    const requiredLetter =
-        getRequiredLetter(currentWord);
+    // 첫 글자 확인
+    const requiredLetter = getRequiredLetter(currentWord);
 
     if (word.charAt(0) !== requiredLetter) {
-
         showMessage("단어의 첫 글자가 맞지 않습니다.");
         return;
     }
 
-
-    // ----------------------------------------
-    // 첫 번째 단어에서 한방 / 공격단어 금지
-    // ----------------------------------------
-
+    // 첫 번째 수에는 한방단어/공격단어 사용 불가
     if (firstMove) {
-
         if (
             oneShotWords.includes(word) ||
             attackWords.includes(word)
         ) {
-
             showMessage("처음에 사용할 수 없는 단어입니다.");
             return;
         }
     }
 
-
-    // ----------------------------------------
-    // 정상적으로 단어 입력
-    // ----------------------------------------
-
+    // 정상 입력
     stopTimer();
 
     currentWord = word;
-
     usedWords.push(word);
 
     firstMove = false;
