@@ -275,16 +275,169 @@ function setBotTurn() {
 // 필요한 글자
 // =====================================================
 
-function getRequiredLetter() {
+// =====================================================
+// 두음법칙
+// =====================================================
 
-    if (currentWord === "") {
+function getDuumLetters(letter) {
 
-        return requiredLetterText.textContent;
+    const result = [letter];
+
+    if (!letter) {
+        return result;
     }
 
-    return currentWord[
-        currentWord.length - 1
+    const code = letter.charCodeAt(0);
+
+    // 한글이 아니면 그대로
+    if (code < 0xAC00 || code > 0xD7A3) {
+        return result;
+    }
+
+    const index = code - 0xAC00;
+
+    // 한글 음절의 초성 / 중성 / 종성
+    const initial = Math.floor(index / 588);
+    const vowel = Math.floor((index % 588) / 28);
+    const finalSound = index % 28;
+
+
+    // ==========================================
+    // 두음법칙이 적용되는 모음
+    //
+    // ㅑ ㅕ ㅖ ㅛ ㅠ ㅣ
+    // ==========================================
+
+    const ieungVowels = [
+        2,   // ㅑ
+        6,   // ㅕ
+        7,   // ㅖ
+        12,  // ㅛ
+        13,  // ㅠ
+        20   // ㅣ
     ];
+
+
+    // ==========================================
+    // ㄴ → ㅇ
+    //
+    // 녀 → 여
+    // 년 → 연
+    // 녕 → 영
+    // 뇨 → 요
+    // 뉴 → 유
+    // 니 → 이
+    // ==========================================
+
+    if (
+        initial === 2 &&
+        ieungVowels.includes(vowel)
+    ) {
+
+        const newInitial = 11; // ㅇ
+
+        const newCode =
+            0xAC00 +
+            newInitial * 588 +
+            vowel * 28 +
+            finalSound;
+
+        result.push(
+            String.fromCharCode(newCode)
+        );
+    }
+
+
+    // ==========================================
+    // ㄹ
+    // ==========================================
+
+    if (initial === 5) {
+
+        // --------------------------------------
+        // ㄹ → ㅇ
+        //
+        // 랴 → 야
+        // 려 → 여
+        // 례 → 예
+        // 료 → 요
+        // 류 → 유
+        // 리 → 이
+        // --------------------------------------
+
+        if (ieungVowels.includes(vowel)) {
+
+            const newInitial = 11;
+
+            const newCode =
+                0xAC00 +
+                newInitial * 588 +
+                vowel * 28 +
+                finalSound;
+
+            result.push(
+                String.fromCharCode(newCode)
+            );
+        }
+
+
+        // --------------------------------------
+        // ㄹ → ㄴ
+        //
+        // 라 → 나
+        // 래 → 내
+        // 로 → 노
+        // 뢰 → 뇌
+        // 루 → 누
+        // 르 → 느
+        // --------------------------------------
+
+        const rieulToNieunVowels = [
+            0,   // ㅏ
+            1,   // ㅐ
+            8,   // ㅗ
+            9,   // ㅚ
+            13,  // ㅠ
+            18   // ㅡ
+        ];
+
+        if (
+            rieulToNieunVowels.includes(vowel)
+        ) {
+
+            const newInitial = 2; // ㄴ
+
+            const newCode =
+                0xAC00 +
+                newInitial * 588 +
+                vowel * 28 +
+                finalSound;
+
+            result.push(
+                String.fromCharCode(newCode)
+            );
+        }
+    }
+
+
+    return result;
+}
+
+
+// =====================================================
+// 두음법칙으로 단어가 이어지는지 확인
+// =====================================================
+
+function canStartWith(word, requiredLetter) {
+
+    if (!word || !requiredLetter) {
+        return false;
+    }
+
+    const possibleLetters =
+        getDuumLetters(requiredLetter);
+
+    return possibleLetters.includes(word[0]);
 }
 
 
