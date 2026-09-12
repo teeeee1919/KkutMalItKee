@@ -721,42 +721,36 @@ function chooseBotWord() {
 // 사용 가능한 다음 단어
 // =====================================================
 
-function getAvailableWords(
-    letter,
-    used
-) {
+// =====================================================
+// 사용 가능한 다음 단어
+// =====================================================
 
-    const words =
-        wordsByFirstLetter.get(letter) || [];
+function getAvailableWords(letter, used) {
+
+    const possibleLetters =
+        getDuumLetters(letter);
+
+    let words = [];
 
 
-    return words.filter(
+    // 두음법칙으로 가능한 모든 글자에서
+    // 단어를 가져옴
+
+    for (const possibleLetter of possibleLetters) {
+
+        const list =
+            wordsByFirstLetter.get(possibleLetter) || [];
+
+        words.push(...list);
+    }
+
+
+    // 중복 제거
+    // 이미 사용한 단어 제거
+
+    return [...new Set(words)].filter(
         word => !used.has(word)
     );
-}
-
-
-// =====================================================
-// 한방 단어 확인
-// =====================================================
-
-function isOneShotWord(word) {
-
-    const last =
-        word[word.length - 1];
-
-
-    const nextWords =
-        getAvailableWords(
-            last,
-            new Set([
-                ...usedWords,
-                word
-            ])
-        );
-
-
-    return nextWords.length === 0;
 }
 
 
