@@ -154,6 +154,8 @@ function startGame(mode) {
 
     lives = MAX_LIVES;
 
+    round = 1;
+
     firstMove = true;
 
     gameStarted = true;
@@ -798,3 +800,66 @@ wordInput.addEventListener(
 
     }
 );
+
+// =====================================================
+// 라운드 끝내기
+// =====================================================
+
+function giveUpRound() {
+
+    if (!gameStarted) {
+        return;
+    }
+
+    // 타이머 정지
+    stopTimer();
+
+    // 목숨 1개 차감
+    lives--;
+
+    updateLives();
+
+    // 목숨이 0이면 패배
+    if (lives <= 0) {
+
+        endGame(
+            "패배!",
+            "목숨을 모두 잃었습니다."
+        );
+
+        return;
+    }
+
+    // 다음 라운드
+    round++;
+
+    currentWord = "";
+    usedWords = [];
+
+    firstMove = true;
+
+    // 시작 글자 랜덤
+    const randomIndex =
+        Math.floor(
+            Math.random() * START_LETTERS.length
+        );
+
+    const startingLetter =
+        START_LETTERS[randomIndex];
+
+    startLetterText.textContent =
+        startingLetter;
+
+    requiredLetterText.textContent =
+        startingLetter;
+
+    currentWordText.textContent = "";
+
+    message.textContent =
+        "라운드 " + round + " 시작!";
+
+    updateHistory();
+
+    // 플레이어 턴으로 시작
+    setPlayerTurn();
+}
