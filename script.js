@@ -1,442 +1,815 @@
-// ========================================
-// 🔴 1. 한방단어
-// ========================================
-// 첫 번째 단어로는 사용할 수 없음.
-// 두 번째 단어부터는 사용 가능.
-
-const oneShotWords = [
-    "기동돓",
-    "기쁨", "가녘", "가믐", "가마솣", "가매솣", "가싥", "가읅", "가벼운피읖", "가쿄", "가래틋", "가래툿", "가오픈",
-    "거먕", "겨읅", "고래구녘", "고븜", "고쭘", "고달픔", "구녝", "구듫", "그믐", "그쭘", "개녘", "개울녘",
-    "개울녘", "개픈개픈", "게훽", "니맣", "니오븀", "나무갗", "나준녘", "나이오븀", "나무샡", "나무새앝", "나구쟤",
-    "나가오카쿄", "노짓돜", "노듈", "노휵", "뉴브런즈윅", "뉴욕머스캇", "네오디뮴", "네트웤", "네오머스캇",
-    "다이디뮴", "다봊", "다래쨤", "다름슈타튬", "도린꼍", "도쿄", "두듥", "두왑", "대숳", "데엋", "데릭스텝",
-    "강녘", "강능띱", "갯불녘", "겁쟤", "곡뒿", "공뭔", "과실쨤", "관싕", "괙괙", "괜찮", "귀썀", "귀틤",
-    "귀아픔", "귁귁", "긔츌", "길녘", "깍쟤", "꼬꾜", "꼬냑", "꼬쟹", "꿕꿕", "뀍뀍", "끄룽텝", "날옺",
-    "남녘", "넵튠", "눈도궃", "눈꽅", "눈쎂", "눈쎕", "눕눕", "늘휫늘휫", "닥울녘", "달거리아픔", "닭울녘",
-    "당구솣", "댱맣", "댱짗", "덥스텝", "덴드로븀", "돌꼇", "동녘", "동솣", "되프뎧", "된히읗", "된아픔", "둘뤗",
-    "둘암탉", "둘훕", "뒤껱", "뒤꼍", "뒤컽", "뒷묗", "든뼌", "들꼍", "들녘", "들뤗", "들옄", "들쭉쨤",
-    "따듬돍", "따곱쟤", "땅붤", "때꾜", "때뀨", "떠돎", "떡케잌", "뙁뙁", "뜨꺼븡", "라듐", "라멜리포듐",
-    "라이피듐", "러키세븐", "로듐", "루비듐", "루테튬", "리튬", "마이크로모듈", "마이크로튜뷸", "마웉",
-    "말볌", "맔겿", "맞춤부엌", "머리컽", "멋쁨", "멘델레븀", "모듈", "모밇", "모스크븀", "모얗", "모샅왙",
-    "몰래왙", "묏긑", "묏얺", "무뤂", "무웟", "묵은지앝", "문녘", "문밲", "물녘", "물랖", "미라시듐", "미쁨",
-    "미왑", "민틋", "바긑", "바꼇", "바냔", "바나듐", "바깥부엌", "반됵", "받두듥", "발가울넠", "발란티듐",
-    "발볌발볌", "밝을넠", "밝아올녘", "밝아울녘", "밭녘", "밭지숡", "배낕", "배캍", "배고픔", "배아픔",
-    "뱍뱍", "버섳", "베꼍", "보솦", "보리앝", "보엌", "본텸", "본톔", "부뚜멐", "부샄", "부샆", "부숰",
-    "부싴", "부대앝", "부얶", "부엌", "부옄", "부젘", "부수짗", "부시짗", "부픎", "북녘", "불녘", "불웝",
-    "뷩뷩", "블루헤븐", "비얨", "비엌", "비틂", "뻘쭘", "뼈마디아픔", "사랖", "사룿", "사과쨤", "사캇",
-    "살갗", "상추썀", "새벅녘", "새벡녘", "새벽녘", "새복녘", "새북녘", "샐녘", "샛깆", "샤기냔", "서녘",
-    "서놩", "서글픔", "석달그믐", "섣달그믐", "섬돓", "섯녘", "섯븐", "세븐", "셋곹", "소듐", "소발뚭",
-    "속눈쎂", "속아픔", "손도궃", "손뜹", "솔옺", "송궃", "쇠꿑", "쇼쿄", "수갏", "수제비태껸", "수땽",
-    "수수땽", "수읨", "수콫", "수탉", "수톹", "숨가쁨", "숨탉", "숭냔", "쉣곹", "쉬욈", "스칸듐", "스믏",
-    "스왑", "스쾃", "스텝", "스트론튬", "슫달그믐", "슬픔", "시보귬", "시티콜린소듐", "시루볜", "시루븐",
-    "시릿븐", "시지윅", "시쿄", "시틋", "신시튬", "실궘", "실큿", "쌍곁", "쌍히읗", "쎗곹", "씨암탉",
-    "아깆", "아깆아깆", "아래꿑", "아루꿑", "아르꿑", "아이저냑", "아이지냑", "아참저냑", "아참지냑",
-    "아척지냑", "아척저냑", "아츰저냑", "아츰지냑", "아랫녘", "아드레노크로뮴", "아스트롤라븀", "아랫입숡",
-    "아랫눈쎂", "아라웋", "아퓸", "아픔", "아훕", "안뒤꼍", "안녘", "안찱", "앏뒿", "앏묗", "암수갏", 
-    "암닼", "암숳", "암탉", "암탘", "암톹", "앞녘", "애틋", "야덟", "양녬", "얘쟤", "어깆", "어깆어깆",
-    "어처냑", "어치냑", "어슬녘", "어븀", "어픈", "어깨등아픔", "어깨팔아픔", "언지냑", "언처냑", "언치냑",
-    "얼저냑", "얼쳐냑", "얼치냑", "얼럭만수탉", "얼픳", "엊저냑", "엊지냑", "에르븀", "에이쿄", "엔도고니듐",
-    "앤쿄", "여덟", "여렃", "여렄", "여린히읗", "옌볜", "오스미리듐", "오시랖", "오지랖", "오찌랖", "오스뮴",
-    "오븐", "오얒", "오버스텝", "오토튠", "오픈", "옥돓", "온시듐", "옷깆", "외얒", "왼녘", "요쭘",
-    "요도펜프로핕", "우누녹튬", "울녘", "움쾜", "웃긑", "웃녘", "웃쇔", "웃입숡", "원두앝", "원쳡",
-    "원스텝", "위아픔", "윗녘", "유료퓸", "을기빝", "읒저냑", "읒지냑", "이깞", "이제냑", "이리듐", "이오포데이트소듐", "이붖",
-    "이터븀", "이테르븀", "이븐", "이세븐", "이웆", "이윶", "이쭘", "인듐", "인스텝", "일고여덟", "일곱여덟",
-    "일구여덟", "일여덟", "입겿", "입녘", "입숡", "입거웆", "잘생쁨", "잠꽌", "장꽌", "장냔", "장닼",
-    "장잘볌", "저꼇", "저냑", "저녁녘", "저물녘", "저븐", "저븐저븐", "저싥", "저읅", "저쭘", "정녝",
-    "제꼇", "제냑", "젹쳡", "조앝", "조쿄", "좜좜", "좸좸", "주금꺠", "주웸주웸", "주쿄", "중첨모듈", "쥄쥄", "즘슉",
-    "지냑", "지세븐", "지싥", "질녘", "질쭘질쭘", "집텋", "쩨꾜", "쪽머리아픔", "차풰", "찰녘", "채매앝", 
-    "채드윅", "챈녘", "챌녘", "챱챱", "처냑", "철클로로필린소듐", "첫긑", "첫밗", "첫가싥", "첫가읅", "초저냑",
-    "초지냑", "초가싥", "초가읅", "초어읆", "총사귐", "치마긶", "치읓", "치미는아픔", "칩튠", "카드뮴",
-    "컷스텝", "케잌", "코냑", "코라시듐", "코큭", "코칭스텝", "코스튬", "콕시듐", "콜로듐", "콜리스티메테이트소듐",
-    "퀵스텝", "크로뮴", "클로스트리듐", "클리니듐", "클로벤프로필", "키읔", "키스텝", "탄쒀", "탕슉", "태껸",
-    "터븀", "터앝", "털갗", "테르븀", "테크네튬", "텩툑", "투스텝", "트라이튬", "트리튬", "티읕", "판밲",
-    "팔라듐", "패러쾃", "페로바나듐", "페르뮴", "푸퉈", "풀꼍", "풀꾈", "풀앝", "풋봠", "풍슉", "프라세오디뮴",
-    "프로윅", "프로메튬", "프로튬", "플레로븀", "픐뎧", "피토크로뮴", "피읖", "필리듐", "하이드라이드리튬", "하퓜",
-    "하이픈", "하픔", "한눤", "한데부엌", "한뎃부엌", "할먄", "함끠", "함실부엌", "해질녘", "핸드우븐", "햇빝",
-    "햇수탉", "햇암탉", "허픈더픈", "허리아픔", "헌겊", "헌칠민틋", "헛부엌", "헝겇", "헝겊", "헝궆", "혓긑",
-    "홀뮴", "히읗"
+// =====================================================
+// 끝말잇기 AI
+// =====================================================
 
 
+// =====================================================
+// 기본 설정
+// =====================================================
+
+const START_LETTERS = [
+    "기", "시", "이", "비", "미",
+    "아", "가", "다", "바", "마",
+    "사", "수", "구", "두", "주",
+    "지", "자", "보", "부", "모",
+    "무", "소", "고", "도", "우",
+    "오", "의", "하", "차", "호"
 ];
 
-
-// ========================================
-// 🟠 2. 공격단어
-// ========================================
-// 첫 번째 단어로는 사용할 수 없음.
-// 두 번째 단어부터는 사용 가능.
-
-const attackWords = [
-    "가레갊", "가걔", "가린긿", "가마깥", "가락지매듭", "가지방석매듭", "가뭄", "가뭇", "가뭇가뭇", "가만사뿐", "가뿐",
-    "가뿐가뿐", "가뿟", "가뿟가뿟", "가쯘가쯘", "간탓", "갈구리매듭", "갈라매듭", "갈롭", "감는매듭", "갓붑", "갓훠",
-    "강냬", "개심매듭", "개발디딤", "갤쯤갤쯤", "갯맡", "걀쯤", "걀쯤걀쯤", "거듧", "거듭", "거듭거듭", "거믓거믓",
-    "거봐", "거붑", "거뿐", "거뿐거뿐", "거뿟", "거뿟거뿟", "거욷", "걱뎡", "걸갊", "걸개매듭", "걸어매듭", "것셥",
-    "겉면켜", "겉켜", "겹고리매듭", "겹매듭", "겹풍삭매듭", "겹사똔", "겹켜", "계횩", "고마깥", "고냬", "고솜돝", "고리매듭",
-    "고매듭", "고맙고맙", "고쇠믓", "고븨", "고샃", "고칼슘", "고싶", "고옳", "고읋", "고쯤", "곡셱", "곰븨님븨", "곳않",
-    "광두뎡", "광켜", "괴발디딤", "구냬", "구듭", "구뭄", "구븨", "구섴", "구리셤", "구레쉠", "구왐", "구읫잫", "국화매듭",
-    "굴근외얏", "굼벵이나래매듭", "굼벵이매듭", "궥궥", "귀뗌", "귀붏", "그러껜", "그듸", "그릏", "그뭄", "그레셤", "그쯤",
-    "그은춍", "그글픠", "그저긃픠", "귿곻", "글픠", "기빱", "기픠", "길쯤", "길쯤길쯤", "까르똔", "깔끼잙", "깩깩", "꺅꺅",
-    "껍질켜", "껙껙", "꼰디기매듭", "꽃부듸", "꽐꽐", "꽛꽛", "꽥꽥", "꾁꾁", "꿋꿋", "꿜꿜", "꿰여매듭", "꿱꿱", "끈끈켜",
-    "끝매듭", "나비매듭", "나랗", "나쎌", "나좋", "나사켜", "난간매듭", "날개매듭", "납작이매듭", "내뎡", "내부켜", "냠냠",
-    "너븨", "너츨", "너흴", "넝츨", "네딤", "논드롭", "논귑", "눈자긱", "눈꾑", "눈끕", "눈낍", "눈쑵", "느븨", "늿바듸",
-    "닉넴", "닐야듧", "님잫", "닛딮", "다딤", "다댐이짖", "단추매듭", "단방시롭", "단우벰", "달삼쓰뱉", "달기툉", "담븨",
-    "닷갊", "당초매듭", "당밀시롭", "대차매듭", "대가뭄", "댓매둡", "댓매듭", "더듸", "더가딤", "던롭", "덩굴무늬매듭",
-    "데프레이숀", "데튝", "도래매듭", "도장버딤", "도톨왐", "도텹", "돈긱", "돌림매듭", "들붑", "돛달이매듭", "돨돨",
-    "된디읃", "됴춍", "두부스낵", "두겹켜", "두틔", "둘레켜", "뒤깥", "뒤코묑", "드롭", "드릏", "들쭉시롭", "디딤",
-    "디클로로프롭", "디스프로슘", "디읃", "딥지즑", "따딤", "딸기매듭", "땅뗌", "땅켜", "떨켜", "떼얏", "떼얏떼얏",
-    "똥넁", "똴똴", "띠얏띠얏", "띡띡", "라기둡", "라니비주맙", "레티큘", "로모소주맙", "로숀", "로렌슘", "리툭시맙",
-    "리츨", "림파매듭", "마스껨", "마듭", "마그네슘", "마음탓", "막매듭", "만쯤", "말겯", "말껨", "말소리바뀜", "말왐",
-    "말쯤", "맞매듭", "매돝", "매둡", "매듭", "매화매듭", "매딤", "맨숀", "머넴", "머리맡", "머리켱", "먹뱉", "멀티숍",
-    "멀쯕멀쯕", "멍듦", "메로페넴", "메츨", "멧돝", "며츨", "몇몇", "모냬", "모넁", "모스타가넴", "모둡", "모듭",
-    "모매듭", "모퇘", "모래틉", "목사개매듭", "목졎", "몰긱", "몸픠", "묏긿", "묏돝",
-    
-    "가겍", "가돌리늄","가늣", "가시그릇", "가시물그릇", "가싯물그릇", "가을가재무릇", "가재무릇", "가제무릇", "가실벹", "가을벹", 
-    "가냥기슭","가냥지슭", "가슭", "간겍", "간그릇", "갈걍갈걍", "갈겟", "갈라파고스펭귄", "갈륨", "갈색간그릇", "갈색그릇", "갈이그릇",
-    "갈벹", "강기슭", "강낭기슭", "개노릇", "개수그릇", "개시그릇", "거리낌", "거믜", "거쩐거쩐", "건듯", "건듯건듯",
-    
-];
+const MAX_LIVES = 2;
+const TIME_LIMIT = 20;
 
 
-// ========================================
-// 🟢 3. 루트단어
-// ========================================
-// 일반적으로 사용할 수 있는 단어.
+// =====================================================
+// 사전
+// =====================================================
 
-const rootWords = [
-    "갖갖", "객객", "객격", "객꾼", "객숟가락", "객몽", "객죽", "객창", "객첩", "객춘", "객체형", "객회", "갬비슨", "갭착",
-    "갱지갱", "갱규꾼", "갱핀군", "갱면", "갱엿", "갱운", "갱죽", "갱피죽", "갱즙", "갱골창", "갱굴창", "갱재첩", "갱핀",
-    "갱건설공학", "갱신형", "겅겅", "겅궤", "겅뚱", "겅뚱겅뚱", "겅버짐", "겐겐", "겐덜", "겐또", "겔렌데슈프링겐", "겔겔",
-    "겔창", "겔핵", "겔흔", "겜덕", "겜알못", "겜티즌", "격격", "격검꾼", "격자무늬", "격락", "격면", "격세안면", "격자면",
-    "격멸", "격리검역못", "격몽", "격리벽", "격벽", "격수벽", "격쇄", "격양", "격쟁", "격자창", "격탁양청", "격탁", "격파틀",
-    "격자형", "격론난힐", "견격", "견마곡격", "견취견", "견곤", "견소포자균", "견급", "견줌급", "견덕", "견득", "견빙", "견삭",
-    "견인삭", "견본쇄", "견쇄", "견융", "견토지쟁", "견척", "견표", "견학", "견사혹", "견혹", "견효", "견훤", "겸괘", "겸덕",
-    "겸보덕", "겸양지덕", "겸득", "겸백면", "겸섭", "겸창", "겸낭청", "겸칭", "겸문학", "겸학", "겸행", "곤겸", "곤곤", "곤괘",
-    "곤궤", "곤급", "곤두꾼", "곤대구덕", "곤덕", "곤득곤득", "곤또", "곤봉손가락", "곤륜", "곤틀릿", "곤면", "곤명면",
-    "곤양면", "곤디새벽", "곤붕", "곤슥", "곤포쌈", "곤지암읍", "곤죽", "곤청", "곤축", "곤푀", "곤핍", "곤충학", "곤학", "곤좌간향",
-    "곤형", "곤혹", "곧곧", "곶닢", "곶감호두쌈", "곽재겸", "곽머리굿", "곽산뻬", "곽삽", "곽인쇄", "곽향", "곽상훈", "곽자흥",
-    "곽희", "괄괄", "괄락괄락", "괘견", "괘덕", "괘락", "괘면", "괘상청", "괘외청", "괘하청", "괘불탱", "괘하현", "괘퍼형",
-    "괘효", "굉굉", "굉규", "굉젖", "굉주교착", "굉창", "굉홍", "굉학", "굉활", "굽굽", "굽은균", "굽벅", "굽벅굽벅", "굽벽",
-    "굽싹굽싹", "굽뒤축", "굽선자리표", "굽은활", "굿거리굿", "굿일꾼", "굿거리가락", "굿춤", "궁객", "궁겅", "궁합지괘",
-    "궁궁", "궁궐", "궁급", "궁깃", "궁둔", "궁듕", "궁사멱득", "궁심멱득", "궁뚱망뚱", "궁멱", "궁뎅이뻬", "궁둥뻬", "궁디뻬",
-    "궁딩이뻬", "궁중닭찜", "궁척", "궁첩", "궁축", "궁둥이춤", "궁둥춤", "궁디춤", "궁핍", "궁상핵", "궁핵", "궁형핵",
-    "궁향", "궁형", "궁혜", "궁조입회", "궁회", "궁흉", "궐향", "궐획", "궐희", "궤격", "궤도폭격", "궤궤", "궤기구덕", "궤락",
-    "궤도면", "궤멸", "궤촉", "궤칙", "궤탁", "궤틀", "궤팡", "궤도형", "궤형", "궤환형", "규산겔", "규격", "규견", "규곽", "규괘",
-    "규규", "규암면", "규칙면", "규벽", "규슨", "규장전운", "규착", "규준틀", "규격표", "규표", "규핵", "규행", "규정형",
-    "규형", "규획", "규식지희", "균핵균", "균락", "균륜", "균질빛", "균역청", "균청", "균축", "균탁", "균류학", "균학",
-    "균핵", "균현", "균형", "균형형", "균압환", "균환", "귤껍질무늬", "귤락", "귤중지락", "귤빛화산해면", "귤빛", "귤잎",
-    "귤핵", "귤현", "급기갱", "급급", "급수꾼", "급등락", "급락", "급추락", "급하락", "급사면", "급빙", "급삭", "급창",
-    "급팽창", "급첩", "급측치표", "급첨두형", "급훈", "긍긍", "긍낙", "긍척", "긍휼", "긴객", "긴장사격", "긴급", "긴불긴",
-    "긴깐", "긴끗", "긴련락", "긴손구락", "긴꼬리물벼룩", "긴뿔물벼룩", "긴털청물벼룩", "긴맛", "긴밑", "긴꼬리도마뱀",
-    "긴원뿔", "긴겨이삭", "긴장삭", "긴자진한잎", "긴착", "긴영창", "긴청", "긴촉", "긴축", "긴탁", "긴장형", "깃무늬",
-    "깃꼴잎", "깃촉", "깃축", "깃대춤", "깃표", "깃대형", "깐깐", "깐딱", "깐딱깐딱", "깐닥하면", "깐딱하면", "깐죽",
-    "깐죽깐죽", "깐죽형", "깝드락", "깝삭", "깝삭깝삭", "깝죽", "깝죽깝죽", "깡깡", "깡뚱", "깡뚱깡뚱", "깡엿", "깡운",
-    "깡짱", "깡짱깡짱", "깡창", "깡창깡창", "깡통형", "깰깰", "꺌꺌", "꺽꺽", "꺽꺽푸드덕", "꺽둑", "꺽둑꺽둑", "꺽꺽푸드득",
-    "꺽죽", "꺽죽꺽죽", "껄껄", "껑껑", "껑뚱", "껑뚱껑뚱", "껑쭝", "껑쭝껑쭝", "껑청껑청", "껑청", "꼭꼭", "꼽꼽",
-    "꼽사리꾼", "꼽새돔", "꼽섀", "꼽창", "꼽당춤", "꼽새춤", "꼽추춤", "꼽셈표", "꼽표", "꼿꼿", "꼿삽", "꽁지깃",
-    "꽁지덮깃", "꽁지꾼", "꽁치꾼", "꽁또", "꽁뎅이뻬", "꽁지뻬", "꽁치찜", "꽁치회", "꽂갬", "꽂을땜", "꽂이접", "꽂임촉",
-    "꽝꽝", "꽝쇄", "꽹꽹", "꾼둑꾼둑", "꾼둑", "꿈땜", "꿈나락", "꿈해몽", "꿈쩍", "꿈쩍꿈쩍", "꿈틀", "꿈틀꿈틀",
-    "꿈학", "꿍꽝", "꿍꽝꿍꽝", "꿍꿍", "뀀틀", "끔벅", "끔벅끔벅", "금뻑", "끔뻑끔뻑", "끔벅번쩍", "끔쩍", "끔쩍끔쩍",
-    "끔찍", "끔찍끔찍", "끗창", "끽긴", "끽끽", "끽착", "끽휴", "낄끽", "낄끽낄끽", "낄낄", "낄룩", "낄쭉낄쭉",
-    "낑낑", "낙성굿", "낙랑단궁", "낙산균", "낙낙", "낙지저냐", "낙락", "낙막락", "낙면", "낙생면", "낙서면", "낙안면",
-    "낙월면", "낙서벽", "낙삭", "낙타사슴", "낙천등운", "낙읍", "낙죽", "낙지김치죽", "낙지죽", "낙화생죽", "낙지찜",
-    "낙착", "낙척", "낙축", "낙양춘", "낙탁", "낙농학", "낙민지학", "낙민학", "낙학", "낙엽비행", "낙향", "낙협",
-    "낙형", "낙상홍", "낙홍", "낙우회", "낙지새우회", "낙지초회", "낙지회", "낙휘", "낙화희", "낙희", "낚시객",
-    "낚수꾼", "낚시꾼", "낚시끗", "낚시회", "냐짱", "넉넉", "넬슨", "녓곶", "눅눅", "눅십", "눙에질겅", "눙에섶",
-    "뉘뉘", "뉘릿뉘릿", "뉘엿", "뉘엿뉘엿", "뉘우춤", "는착는착", "늬굽", "댕견", "댕궁", "댕기깃", "댕댕", "댕기망둑",
-    "덕대갱", "덕수궁", "덕안궁", "덕무룩", "덕곡면", "독과면", "덕산면", "덕적면", "덕진면", "덕천면", "덕치면", "덕계못",
-    "덕거뮈", "덕빛", "덕응", "덕진구청", "덕청", "덕틀", "덕행", "덕산현", "덕현", "덕장형", "덕형", "덕휘", "덜머리총객",
-    "덜겅", "덜겅덜겅", "덜꺽", "덜꺽덜꺽", "덜껑", "덜껑덜껑", "덜렁꾼", "덜미꾼", "덜썩꿍", "덜썩궁덜썩궁", "덜거덕",
-    "덜거덕덜거덕", "덜꺼덕", "덜꺼덕덜꺼덕", "덜커덕", "덜커덕덜커덕", "덜퍼덕", "덜푸덕", "덜덜", "덜룩덜룩", "덜룽", "덜룽덜룽",
-    "덜썩", "덜썩덜썩", "덜씬", "덜미청", "덜픽", "덜기표", "뎅겅", "뎅겅뎅겅", "뎅뎅", "돔양꿍",
+let dictionary = [];
+let dictionarySet = new Set();
+
+// 첫 글자별 단어
+let wordsByFirstLetter = new Map();
+
+// 마지막 글자별 단어
+let wordsByLastLetter = new Map();
 
 
-];
-
-// ========================================
-// 4. ⚫️ 패배단어
-// ========================================
-// 몇 수 이내에 패배하게 되는 단어
-
-const losingWords = [
-
-    "예시패배단어"
-
-]
-
-
-// ========================================
-// 게임 설정
-// ========================================
-
-const startLetters = [
-    "기", "시", "이", "비", "미", "아",
-    "가", "다", "바", "마", "사", "수",
-    "구", "두", "주", "지", "자", "보",
-    "부", "모", "무", "소", "고", "도",
-    "우", "오", "의", "하", "차", "호"
-];
+// =====================================================
+// 게임 상태
+// =====================================================
 
 let currentWord = "";
 let usedWords = [];
-let lives = 2;
-let timer = 20;
-let timerInterval = null;
+
+let lives = MAX_LIVES;
+
 let playerTurn = false;
 let firstMove = true;
 
+let timer = null;
+let timeLeft = TIME_LIMIT;
 
-// ========================================
-// 모든 단어 합치기
-// ========================================
-
-const allWords = [
-    ...oneShotWords,
-    ...attackWords,
-    ...lootWords,
-    ...losingWords
-];
+let gameStarted = false;
 
 
-// ========================================
-// 게임 시작
-// ========================================
+// =====================================================
+// 화면 요소
+// =====================================================
+
+const startScreen = document.getElementById("startScreen");
+const gameScreen = document.getElementById("gameScreen");
+const endScreen = document.getElementById("endScreen");
+
+const startLetterText = document.getElementById("startLetter");
+const requiredLetterText = document.getElementById("requiredLetter");
+
+const currentWordText = document.getElementById("currentWord");
+
+const livesText = document.getElementById("lives");
+const timerText = document.getElementById("timer");
+
+const turnMessage = document.getElementById("turnMessage");
+const message = document.getElementById("message");
+
+const wordInput = document.getElementById("wordInput");
+const submitButton = document.getElementById("submitButton");
+
+const history = document.getElementById("history");
+
+
+// =====================================================
+// 단어 사전 불러오기
+// =====================================================
+
+fetch("words.txt")
+    .then(response => {
+
+        if (!response.ok) {
+            throw new Error("words.txt를 불러오지 못했습니다.");
+        }
+
+        return response.text();
+    })
+
+    .then(text => {
+
+        dictionary = text
+            .split(/\r?\n/)
+            .map(word => word.trim())
+            .filter(word => word.length > 0);
+
+        // 중복 제거
+        dictionary = [...new Set(dictionary)];
+
+        dictionarySet = new Set(dictionary);
+
+
+        // -------------------------------------------------
+        // 첫 글자 / 마지막 글자별로 색인
+        // -------------------------------------------------
+
+        for (const word of dictionary) {
+
+            const first = word[0];
+            const last = word[word.length - 1];
+
+
+            // 첫 글자
+            if (!wordsByFirstLetter.has(first)) {
+                wordsByFirstLetter.set(first, []);
+            }
+
+            wordsByFirstLetter.get(first).push(word);
+
+
+            // 마지막 글자
+            if (!wordsByLastLetter.has(last)) {
+                wordsByLastLetter.set(last, []);
+            }
+
+            wordsByLastLetter.get(last).push(word);
+        }
+
+
+        console.log(
+            "단어 로딩 완료:",
+            dictionary.length,
+            "개"
+        );
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert(
+            "words.txt를 불러오지 못했습니다.\n" +
+            "GitHub에 words.txt가 제대로 올라갔는지 확인해주세요."
+        );
+    });
+
+
+// =====================================================
+// 시작
+// =====================================================
 
 function startGame(mode) {
 
-    document.getElementById("startScreen").classList.add("hidden");
-    document.getElementById("gameScreen").classList.remove("hidden");
+    if (dictionary.length === 0) {
 
-    lives = 2;
+        alert("아직 단어 사전이 로딩되지 않았습니다.");
+
+        return;
+    }
+
+
+    // 게임 초기화
+    currentWord = "";
     usedWords = [];
+
+    lives = MAX_LIVES;
+
     firstMove = true;
 
-    // 시작 글자 랜덤 선택
+    gameStarted = true;
+
+
+    // 시작 글자 랜덤
     const randomIndex =
-        Math.floor(Math.random() * startLetters.length);
+        Math.floor(Math.random() * START_LETTERS.length);
 
-    currentWord = startLetters[randomIndex];
+    const startingLetter =
+        START_LETTERS[randomIndex];
 
-    document.getElementById("currentWord").textContent = currentWord;
+    startLetterText.textContent = startingLetter;
+    requiredLetterText.textContent = startingLetter;
 
-    // 선공 / 후공 / 랜덤 결정
-    if (mode === "first") {
+
+    // 선공 / 후공 / 랜덤
+    if (mode === "player") {
+
         playerTurn = true;
-    }
 
-    else if (mode === "second") {
+    } else if (mode === "bot") {
+
         playerTurn = false;
-    }
 
-    else {
+    } else {
+
         playerTurn = Math.random() < 0.5;
     }
 
+
+    startScreen.classList.add("hidden");
+    endScreen.classList.add("hidden");
+    gameScreen.classList.remove("hidden");
+
+
     updateLives();
-    updateNextLetter();
+
+    updateHistory();
+
+    message.textContent = "";
+
+
+    // -------------------------------------------------
+    // 선공이면 바로 플레이어
+    // 후공이면 봇
+    // -------------------------------------------------
 
     if (playerTurn) {
-        showMessage("당신의 차례입니다.");
-        startTimer();
-    }
 
-    else {
-        showMessage("봇이 생각 중...");
-        startTimer();
-        setTimeout(botTurn, 1000);
+        setPlayerTurn();
+
+    } else {
+
+        setBotTurn();
+
+        setTimeout(botTurn, 800);
     }
 }
 
 
-// ========================================
-// 단어 입력
-// ========================================
+// =====================================================
+// 플레이어 턴
+// =====================================================
 
-function submitWord() {
-
-    if (!playerTurn) {
-        return;
-    }
-
-    const input = document.getElementById("wordInput");
-    const word = input.value.trim();
-
-    input.value = "";
-
-    if (word === "") {
-        return;
-    }
-
-    // 이미 사용한 단어
-    if (usedWords.includes(word)) {
-        showMessage("이미 사용한 단어입니다.");
-        return;
-    }
-
-    // 존재하지 않는 단어
-    if (!allWords.includes(word)) {
-        showMessage("존재하지 않는 단어입니다.");
-        return;
-    }
-
-    // 첫 글자 확인
-    const requiredLetter = getRequiredLetter(currentWord);
-
-    if (word.charAt(0) !== requiredLetter) {
-        showMessage("단어의 첫 글자가 맞지 않습니다.");
-        return;
-    }
-
-    // 첫 번째 수에는 한방단어/공격단어 사용 불가
-    if (firstMove) {
-        if (
-            oneShotWords.includes(word) ||
-            attackWords.includes(word)
-        ) {
-            showMessage("처음에 사용할 수 없는 단어입니다.");
-            return;
-        }
-    }
-
-    // 정상 입력
-    stopTimer();
-
-    currentWord = word;
-    usedWords.push(word);
-
-    firstMove = false;
-
-    addWordToHistory(word);
-
-    document.getElementById("currentWord").textContent =
-        currentWord;
-
-    updateNextLetter();
-
-    playerTurn = false;
-
-    showMessage("봇이 생각 중...");
-
-    setTimeout(botTurn, 800);
-}
-
-
-// ========================================
-// 봇 차례
-// ========================================
-
-function botTurn() {
-
-    if (lives <= 0) {
-        return;
-    }
-
-    const requiredLetter =
-        getRequiredLetter(currentWord);
-
-
-    // 봇이 낼 수 있는 단어 찾기
-const possibleWords = allWords.filter(word => {
-
-    // 현재 글자로 시작해야 함
-    if (word.charAt(0) !== requiredLetter) {
-        return false;
-    }
-
-    // 이미 사용한 단어는 사용 불가
-    if (usedWords.includes(word)) {
-        return false;
-    }
-
-    // 첫 번째 단어에서는 한방단어와 공격단어 사용 불가
-    if (
-        firstMove &&
-        (
-            oneShotWords.includes(word) ||
-            attackWords.includes(word)
-        )
-    ) {
-        return false;
-    }
-
-    return true;
-});
-
-
-    // ----------------------------------------
-    // 봇이 낼 단어가 없음
-    // ----------------------------------------
-
-    if (possibleWords.length === 0) {
-
-        showMessage("봇이 더 이상 낼 단어가 없습니다!");
-
-        endGame(true);
-
-        return;
-    }
-
-
-    // 랜덤으로 선택
-    const randomIndex =
-        Math.floor(Math.random() * possibleWords.length);
-
-    const botWord =
-        possibleWords[randomIndex];
-
-
-    currentWord = botWords
-
-    usedWords.push(botWord);
-
-    firstMove = false;
-
-    addWordToHistory(botWord);
-
-    document.getElementById("currentWord").textContent =
-        currentWord;
-
-    updateNextLetter();
-
-    showMessage("봇: " + botWord);
+function setPlayerTurn() {
 
     playerTurn = true;
+
+    turnMessage.textContent =
+        "당신의 턴";
+
+    submitButton.disabled = false;
+    wordInput.disabled = false;
+
+    wordInput.focus();
 
     startTimer();
 }
 
 
-// ========================================
-// 다음 글자 계산
-// ========================================
+// =====================================================
+// 봇 턴
+// =====================================================
 
-function getRequiredLetter(word) {
+function setBotTurn() {
 
-    return word.charAt(word.length - 1);
+    playerTurn = false;
+
+    turnMessage.textContent =
+        "봇이 생각 중...";
+
+    submitButton.disabled = true;
+    wordInput.disabled = true;
+
+    stopTimer();
 }
 
 
-// ========================================
-// 제한시간 시작
-// ========================================
+// =====================================================
+// 현재 필요한 글자
+// =====================================================
+
+function getRequiredLetter() {
+
+    if (currentWord === "") {
+
+        return requiredLetterText.textContent;
+    }
+
+    return currentWord[currentWord.length - 1];
+}
+
+
+// =====================================================
+// 플레이어 단어 입력
+// =====================================================
+
+function submitWord() {
+
+    if (!playerTurn || !gameStarted) {
+        return;
+    }
+
+
+    const word =
+        wordInput.value.trim();
+
+
+    wordInput.value = "";
+
+    message.textContent = "";
+
+
+    // 빈칸
+    if (word.length === 0) {
+
+        message.textContent =
+            "단어를 입력해주세요.";
+
+        return;
+    }
+
+
+    // -------------------------------------------------
+    // 이미 사용한 단어
+    // -------------------------------------------------
+
+    if (usedWords.includes(word)) {
+
+        message.textContent =
+            "이미 사용한 단어입니다.";
+
+        return;
+    }
+
+
+    // -------------------------------------------------
+    // 사전에 없는 단어
+    // -------------------------------------------------
+
+    if (!dictionarySet.has(word)) {
+
+        message.textContent =
+            "존재하지 않는 단어입니다.";
+
+        return;
+    }
+
+
+    // -------------------------------------------------
+    // 첫 글자 검사
+    // -------------------------------------------------
+
+    const requiredLetter =
+        getRequiredLetter();
+
+    if (word[0] !== requiredLetter) {
+
+        message.textContent =
+            "단어의 첫 글자가 맞지 않습니다.";
+
+        return;
+    }
+
+
+    // -------------------------------------------------
+    // 첫 번째 수에는 한방/공격 금지
+    // -------------------------------------------------
+
+    if (
+        firstMove &&
+        isOneShotWord(word)
+    ) {
+
+        message.textContent =
+            "처음에 사용할 수 없는 단어입니다.";
+
+        return;
+    }
+
+
+    // -------------------------------------------------
+    // 정상 입력
+    // -------------------------------------------------
+
+    stopTimer();
+
+    useWord(word, "player");
+
+    firstMove = false;
+
+
+    // 봇 턴
+    setBotTurn();
+
+    setTimeout(botTurn, 700);
+}
+
+
+// =====================================================
+// 단어 사용
+// =====================================================
+
+function useWord(word, owner) {
+
+    currentWord = word;
+
+    usedWords.push(word);
+
+
+    currentWordText.textContent =
+        word;
+
+
+    requiredLetterText.textContent =
+        word[word.length - 1];
+
+
+    updateHistory();
+}
+
+
+// =====================================================
+// 봇 턴
+// =====================================================
+
+function botTurn() {
+
+    if (!gameStarted) {
+        return;
+    }
+
+
+    const botWord =
+        chooseBotWord();
+
+
+    // 낼 단어가 없음
+    if (!botWord) {
+
+        endGame(
+            "승리!",
+            "봇이 낼 수 있는 단어가 없습니다."
+        );
+
+        return;
+    }
+
+
+    useWord(botWord, "bot");
+
+    firstMove = false;
+
+
+    // 다시 플레이어
+    setPlayerTurn();
+}
+
+
+// =====================================================
+// 봇 AI
+// =====================================================
+
+function chooseBotWord() {
+
+    const requiredLetter =
+        getRequiredLetter();
+
+
+    let candidates =
+        wordsByFirstLetter.get(requiredLetter) || [];
+
+
+    // 이미 사용한 단어 제거
+    candidates = candidates.filter(
+        word => !usedWords.includes(word)
+    );
+
+
+    if (candidates.length === 0) {
+        return null;
+    }
+
+
+    // -------------------------------------------------
+    // 첫 수에는 한방/공격 금지
+    // -------------------------------------------------
+
+    if (firstMove) {
+
+        candidates =
+            candidates.filter(word =>
+                !isOneShotWord(word) &&
+                !isAttackWord(word)
+            );
+    }
+
+
+    if (candidates.length === 0) {
+        return null;
+    }
+
+
+    // -------------------------------------------------
+    // 모든 후보 분석
+    // -------------------------------------------------
+
+    const analyzed = candidates.map(word => {
+
+        return {
+            word: word,
+            category: analyzeWord(word),
+            score: getWordScore(word)
+        };
+    });
+
+
+    // -------------------------------------------------
+    // 우선순위
+    //
+    // 한방 > 공격 > 루트 > 패배
+    // -------------------------------------------------
+
+    const priority = {
+        "한방": 4,
+        "공격": 3,
+        "루트": 2,
+        "패배": 1
+    };
+
+
+    analyzed.sort((a, b) => {
+
+        const priorityDifference =
+            priority[b.category] -
+            priority[a.category];
+
+
+        if (priorityDifference !== 0) {
+            return priorityDifference;
+        }
+
+
+        // 같은 분류라면 점수가 높은 것
+        return b.score - a.score;
+    });
+
+
+    return analyzed[0].word;
+}
+
+
+// =====================================================
+// 단어 분류
+// =====================================================
+
+function analyzeWord(word) {
+
+    // 한방
+    if (isOneShotWord(word)) {
+        return "한방";
+    }
+
+
+    // 공격
+    if (isAttackWord(word)) {
+        return "공격";
+    }
+
+
+    // -------------------------------------------------
+    // 이후 몇 수를 계산해서 승패 가능성 판단
+    // -------------------------------------------------
+
+    const result =
+        searchPosition(
+            word,
+            5,
+            new Set([...usedWords, word])
+        );
+
+
+    if (result === "WIN") {
+        return "공격";
+    }
+
+
+    if (result === "LOSE") {
+        return "패배";
+    }
+
+
+    return "루트";
+}
+
+
+// =====================================================
+// 한방단어
+// =====================================================
+
+function isOneShotWord(word) {
+
+    const last =
+        word[word.length - 1];
+
+
+    const nextWords =
+        getAvailableWords(
+            last,
+            new Set([...usedWords, word])
+        );
+
+
+    return nextWords.length === 0;
+}
+
+
+// =====================================================
+// 공격단어
+// =====================================================
+
+function isAttackWord(word) {
+
+    const last =
+        word[word.length - 1];
+
+
+    const nextWords =
+        getAvailableWords(
+            last,
+            new Set([...usedWords, word])
+        );
+
+
+    // 상대가 선택할 수 있는 단어가 적을수록
+    // 공격적인 단어로 취급
+    //
+    // 1~2개 → 공격
+    //
+    // 0개는 한방에서 이미 처리
+    //
+
+    return (
+        nextWords.length >= 1 &&
+        nextWords.length <= 2
+    );
+}
+
+
+// =====================================================
+// 사용 가능한 다음 단어
+// =====================================================
+
+function getAvailableWords(letter, used) {
+
+    const words =
+        wordsByFirstLetter.get(letter) || [];
+
+
+    return words.filter(
+        word => !used.has(word)
+    );
+}
+
+
+// =====================================================
+// 게임 탐색 AI
+// =====================================================
+//
+// WIN  = 현재 봇에게 유리
+// LOSE = 현재 봇에게 불리
+// DRAW = 확실하게 판단하기 어려움
+//
+// depth가 너무 높으면 54만 단어에서
+// 계산량이 폭발할 수 있기 때문에 제한함.
+// =====================================================
+
+const searchMemo = new Map();
+
+
+function searchPosition(
+    word,
+    depth,
+    used
+) {
+
+    if (depth <= 0) {
+        return "DRAW";
+    }
+
+
+    const last =
+        word[word.length - 1];
+
+
+    const nextWords =
+        getAvailableWords(last, used);
+
+
+    // 다음 단어가 없다
+    if (nextWords.length === 0) {
+        return "LOSE";
+    }
+
+
+    let hasDraw = false;
+
+
+    // 후보를 최대 20개까지만 검색
+    // 브라우저 속도 보호
+    const candidates =
+        nextWords.slice(0, 20);
+
+
+    for (const nextWord of candidates) {
+
+        const nextUsed =
+            new Set(used);
+
+        nextUsed.add(nextWord);
+
+
+        const result =
+            searchPosition(
+                nextWord,
+                depth - 1,
+                nextUsed
+            );
+
+
+        // 상대가 LOSE가 되는 수를 찾으면
+        // 현재 플레이어에게 WIN
+        if (result === "LOSE") {
+            return "WIN";
+        }
+
+
+        if (result === "DRAW") {
+            hasDraw = true;
+        }
+    }
+
+
+    if (hasDraw) {
+        return "DRAW";
+    }
+
+
+    return "LOSE";
+}
+
+
+// =====================================================
+// 봇 점수
+// =====================================================
+
+function getWordScore(word) {
+
+    const last =
+        word[word.length - 1];
+
+
+    const nextWords =
+        getAvailableWords(
+            last,
+            new Set([...usedWords, word])
+        );
+
+
+    // 상대 선택지가 적을수록 높은 점수
+    let score =
+        1000 - nextWords.length;
+
+
+    // 탐색으로 미래 승리 가능성 계산
+    const result =
+        searchPosition(
+            word,
+            4,
+            new Set([...usedWords, word])
+        );
+
+
+    if (result === "WIN") {
+        score += 500;
+    }
+
+    else if (result === "LOSE") {
+        score -= 500;
+    }
+
+
+    return score;
+}
+
+
+// =====================================================
+// 타이머
+// =====================================================
 
 function startTimer() {
 
     stopTimer();
 
-    timer = 20;
+    timeLeft = TIME_LIMIT;
 
-    document.getElementById("timer").textContent =
-        timer;
+    timerText.textContent =
+        timeLeft;
 
-    timerInterval = setInterval(() => {
 
-        timer--;
+    timer = setInterval(() => {
 
-        document.getElementById("timer").textContent =
-            timer;
+        timeLeft--;
 
-        if (timer <= 0) {
+        timerText.textContent =
+            timeLeft;
+
+
+        if (timeLeft <= 0) {
 
             stopTimer();
 
@@ -447,24 +820,24 @@ function startTimer() {
 }
 
 
-// ========================================
-// 제한시간 종료
-// ========================================
+// =====================================================
+// 타이머 정지
+// =====================================================
 
 function stopTimer() {
 
-    if (timerInterval !== null) {
+    if (timer !== null) {
 
-        clearInterval(timerInterval);
+        clearInterval(timer);
 
-        timerInterval = null;
+        timer = null;
     }
 }
 
 
-// ========================================
+// =====================================================
 // 시간 초과
-// ========================================
+// =====================================================
 
 function timeOut() {
 
@@ -472,132 +845,114 @@ function timeOut() {
         return;
     }
 
+
+    message.textContent =
+        "시간 초과!";
+
+
     lives--;
 
     updateLives();
 
-    showMessage("시간 초과! 목숨이 1개 깎였습니다.");
 
     if (lives <= 0) {
 
-        endGame(false);
+        endGame(
+            "패배!",
+            "목숨을 모두 잃었습니다."
+        );
 
         return;
     }
 
 
-    // 목숨이 남아있으면 봇 차례
-    playerTurn = false;
+    // 목숨 하나 잃고 다시 플레이
+    setTimeout(() => {
 
-    showMessage("시간 초과! 봇이 이어갑니다.");
+        message.textContent =
+            "목숨을 하나 잃었습니다.";
 
-    setTimeout(botTurn, 1000);
+        setPlayerTurn();
+
+    }, 700);
 }
 
 
-// ========================================
+// =====================================================
 // 목숨 표시
-// ========================================
+// =====================================================
 
 function updateLives() {
 
-    let hearts = "";
+    livesText.textContent =
+        "❤️".repeat(lives) +
+        "🖤".repeat(MAX_LIVES - lives);
+}
 
-    for (let i = 0; i < lives; i++) {
-        hearts += "❤️ ";
+
+// =====================================================
+// 사용 단어 표시
+// =====================================================
+
+function updateHistory() {
+
+    history.innerHTML = "";
+
+
+    for (const word of usedWords) {
+
+        const element =
+            document.createElement("span");
+
+        element.className =
+            "historyWord";
+
+        element.textContent =
+            word;
+
+        history.appendChild(element);
     }
-
-    document.getElementById("lives").textContent =
-        hearts;
 }
 
 
-// ========================================
-// 현재 필요한 글자 표시
-// ========================================
-
-function updateNextLetter() {
-
-    const letter =
-        getRequiredLetter(currentWord);
-
-    document.getElementById("nextLetter").textContent =
-        "다음 단어는 '" + letter + "'으로 시작해야 합니다.";
-}
-
-
-// ========================================
-// 메시지 표시
-// ========================================
-
-function showMessage(message) {
-
-    document.getElementById("message").textContent =
-        message;
-}
-
-
-// ========================================
-// 단어 기록
-// ========================================
-
-function addWordToHistory(word) {
-
-    const wordList =
-        document.getElementById("wordList");
-
-    const item =
-        document.createElement("span");
-
-    item.className = "word-item";
-
-    item.textContent = word;
-
-    wordList.appendChild(item);
-}
-
-
-// ========================================
+// =====================================================
 // 게임 종료
-// ========================================
+// =====================================================
 
-function endGame(playerWon) {
+function endGame(title, text) {
+
+    gameStarted = false;
 
     stopTimer();
 
-    playerTurn = false;
 
-    document.getElementById("gameScreen")
-        .classList.add("hidden");
+    gameScreen.classList.add("hidden");
 
-    document.getElementById("endScreen")
-        .classList.remove("hidden");
+    endScreen.classList.remove("hidden");
 
-    const result =
-        document.getElementById("resultText");
 
-    if (playerWon) {
+    document.getElementById(
+        "resultTitle"
+    ).textContent = title;
 
-        result.textContent =
-            "🎉 승리!";
 
-    } else {
-
-        result.textContent =
-            "😢 패배!";
-    }
+    document.getElementById(
+        "resultMessage"
+    ).textContent = text;
 }
 
 
-// ========================================
-// Enter 키로 입력
-// ========================================
+// =====================================================
+// Enter 키
+// =====================================================
 
-document.getElementById("wordInput")
-    .addEventListener("keydown", function(event) {
+wordInput.addEventListener(
+    "keydown",
+    function(event) {
 
         if (event.key === "Enter") {
             submitWord();
         }
 
-    });
+    }
+);
