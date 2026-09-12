@@ -211,7 +211,7 @@ function startGame(mode) {
 
     lives = 2;
     usedWords = [];
-    firstPlayerWord = true;
+    firstMove = true;
 
     // 시작 글자 랜덤 선택
     const randomIndex =
