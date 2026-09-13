@@ -392,7 +392,7 @@ function getDuumLetters(letter) {
         5,   // ㅔ
         8,   // ㅗ
         13,  // ㅜ
-        18   // ㅡ
+        18,   // ㅡ
         21   // ㅢ
     ];
 
