@@ -11,8 +11,12 @@
 
 <div class="container">
 
+    <!-- ============================= -->
     <!-- 시작 화면 -->
+    <!-- ============================= -->
+
     <section id="startScreen">
+
         <h1>끝말잇기</h1>
 
         <p class="startLetter">
@@ -21,82 +25,123 @@
         </p>
 
         <div class="modeButtons">
-            <button onclick="startGame('player')">선공</button>
-            <button onclick="startGame('bot')">후공</button>
-            <button onclick="startGame('random')">랜덤</button>
-            <button id="dictionaryButton" class="dictionaryButton">
-    📖 사전보기
-</button>
 
-<!-- ============================= -->
-<!-- 사전 -->
-<!-- ============================= -->
+            <button onclick="startGame('player')">
+                선공
+            </button>
 
-<div id="dictionaryScreen" class="dictionaryScreen hidden">
+            <button onclick="startGame('bot')">
+                후공
+            </button>
 
-    <div class="dictionaryBox">
+            <button onclick="startGame('random')">
+                랜덤
+            </button>
 
-        <button id="closeDictionary" class="closeDictionary">
-            ✕
+        </div>
+
+        <button
+            id="dictionaryButton"
+            class="dictionaryButton"
+        >
+            📖 사전보기
         </button>
 
-        <h2>📖 끝말잇기 사전</h2>
-
-        <input
-            type="text"
-            id="dictionarySearch"
-            class="dictionarySearch"
-            placeholder="첫 글자를 입력하세요"
-            maxlength="1"
-        >
-
-        <div id="dictionaryResult">
-
-            <p class="dictionaryGuide">
-                첫 글자를 입력하면 단어가 표시됩니다.
-            </p>
-
-        </div>
-
-    </div>
-
-</div>
-        </div>
     </section>
 
 
+    <!-- ============================= -->
+    <!-- 사전 -->
+    <!-- ============================= -->
+
+    <div
+        id="dictionaryScreen"
+        class="dictionaryScreen hidden"
+    >
+
+        <div class="dictionaryBox">
+
+            <button
+                id="closeDictionary"
+                class="closeDictionary"
+            >
+                ✕
+            </button>
+
+            <h2>📖 끝말잇기 사전</h2>
+
+            <input
+                type="text"
+                id="dictionarySearch"
+                class="dictionarySearch"
+                placeholder="첫 글자를 입력하세요"
+                maxlength="1"
+                autocomplete="off"
+            >
+
+            <div id="dictionaryResult">
+
+                <p class="dictionaryGuide">
+                    첫 글자를 입력하면 단어가 표시됩니다.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================= -->
     <!-- 게임 화면 -->
+    <!-- ============================= -->
+
     <section id="gameScreen" class="hidden">
 
-<div class="top">
+        <div class="top">
 
-    <div>
-        목숨:
-        <span id="lives">❤️❤️</span>
-    </div>
+            <div>
+                목숨:
+                <span id="lives">❤️❤️</span>
+            </div>
 
-    <div>
-        제한시간:
-        <span id="timer">20</span>
-    </div>
+            <div>
+                제한시간:
+                <span id="timer">20</span>
+            </div>
 
-    <button onclick="giveUpRound()">끝내기</button>
+            <button onclick="giveUpRound()">
+                끝내기
+            </button>
 
-</div>
+        </div>
+
 
         <div class="required">
+
             <p>현재 글자</p>
+
             <h2 id="requiredLetter">?</h2>
+
         </div>
+
 
         <div class="current">
+
             <p>현재 단어</p>
+
             <h2 id="currentWord">-</h2>
+
         </div>
 
-        <div id="turnMessage" class="turnMessage">
+
+        <div
+            id="turnMessage"
+            class="turnMessage"
+        >
             준비 중...
         </div>
+
 
         <div class="inputArea">
 
@@ -107,51 +152,68 @@
                 placeholder="단어를 입력하세요"
             >
 
-            <button id="submitButton" onclick="submitWord()">
+            <button
+                id="submitButton"
+                onclick="submitWord()"
+            >
                 입력
             </button>
 
         </div>
 
+
         <div id="message"></div>
 
+
         <div class="historyBox">
+
             <h3>사용한 단어</h3>
+
             <div id="history"></div>
+
         </div>
 
     </section>
 
 
-<section id="endScreen" class="hidden">
+    <!-- ============================= -->
+    <!-- 종료 화면 -->
+    <!-- ============================= -->
 
-    <h1 id="resultTitle"></h1>
+    <section id="endScreen" class="hidden">
 
-    <p id="resultMessage"></p>
+        <h1 id="resultTitle"></h1>
 
-    <button onclick="showGameRecord()">
-        기록 보기
-    </button>
+        <p id="resultMessage"></p>
 
-    <button onclick="location.reload()">
-        다시 하기
-    </button>
-
-    <div id="recordBox" class="recordBox hidden">
-
-        <h2>📋 게임 기록</h2>
-
-        <div id="gameRecord"></div>
-
-        <button onclick="hideGameRecord()">
-            기록 닫기
+        <button onclick="showGameRecord()">
+            기록 보기
         </button>
 
-    </div>
+        <button onclick="location.reload()">
+            다시 하기
+        </button>
 
-</section>
+
+        <div
+            id="recordBox"
+            class="recordBox hidden"
+        >
+
+            <h2>📋 게임 기록</h2>
+
+            <div id="gameRecord"></div>
+
+            <button onclick="hideGameRecord()">
+                기록 닫기
+            </button>
+
+        </div>
+
+    </section>
 
 </div>
+
 
 <script src="script.js"></script>
 
