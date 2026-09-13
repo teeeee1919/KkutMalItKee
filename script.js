@@ -613,6 +613,7 @@ function startGame(mode) {
 
     currentWord = "";
     usedWords = [];
+    gameRecord = [];
 
     lives = MAX_LIVES;
 
