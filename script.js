@@ -888,11 +888,15 @@ function useWord(word) {
     currentWordText.textContent =
         word;
 
+    // 게임 기록 저장
+    gameRecord.push({
+        player: playerTurn ? "당신" : "봇",
+        word: word
+    });
 
     updateRequiredLetterDisplay(
         word[word.length - 1]
     );
-
 
     updateHistory();
 }
