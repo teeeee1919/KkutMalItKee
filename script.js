@@ -1902,6 +1902,232 @@ function classifyDictionaryWord(
 // =====================================================
 // 일반 사전 섹션
 // =====================================================
+function createDictionarySection(
+    title,
+    words
+) {
+
+    const section =
+        document.createElement(
+            "div"
+        );
+
+
+    section.className =
+        "dictionarySection";
+
+
+    const titleElement =
+        document.createElement(
+            "h3"
+        );
+
+
+    titleElement.textContent =
+        title;
+
+
+    section.appendChild(
+        titleElement
+    );
+
+
+    if (
+        words.length === 0
+    ) {
+
+        const empty =
+            document.createElement(
+                "p"
+            );
+
+
+        empty.className =
+            "dictionaryEmpty";
+
+
+        empty.textContent =
+            "해당 단어가 없습니다.";
+
+
+        section.appendChild(
+            empty
+        );
+
+
+        return section;
+    }
+
+
+    const container =
+        document.createElement(
+            "div"
+        );
+
+
+    container.className =
+        "dictionaryWords";
+
+
+    const pageSize = 30;
+
+
+    let currentPage = 1;
+
+
+    function renderPage() {
+
+        container.innerHTML = "";
+
+
+        const start =
+            (currentPage - 1) *
+            pageSize;
+
+
+        const end =
+            start + pageSize;
+
+
+        const pageWords =
+            words.slice(
+                start,
+                end
+            );
+
+
+        for (
+            const word
+            of pageWords
+        ) {
+
+            const line =
+                document.createElement(
+                    "div"
+                );
+
+
+            line.className =
+                "dictionaryWordLine";
+
+
+            const wordText =
+                document.createElement(
+                    "span"
+                );
+
+
+            wordText.className =
+                "dictionaryWordText";
+
+
+            wordText.textContent =
+                word;
+
+
+            line.appendChild(
+                wordText
+            );
+
+
+            container.appendChild(
+                line
+            );
+        }
+
+
+        pagination.innerHTML = "";
+
+
+        const totalPages =
+            Math.ceil(
+                words.length /
+                pageSize
+            );
+
+
+        if (
+            totalPages <= 1
+        ) {
+
+            return;
+        }
+
+
+        for (
+            let page = 1;
+            page <= totalPages;
+            page++
+        ) {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.textContent =
+                page;
+
+
+            button.className =
+                "dictionaryPageButton";
+
+
+            if (
+                page === currentPage
+            ) {
+
+                button.classList.add(
+                    "active"
+                );
+            }
+
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    currentPage =
+                        page;
+
+                    renderPage();
+                }
+            );
+
+
+            pagination.appendChild(
+                button
+            );
+        }
+    }
+
+
+    const pagination =
+        document.createElement(
+            "div"
+        );
+
+
+    pagination.className =
+        "dictionaryPagination";
+
+
+    section.appendChild(
+        container
+    );
+
+
+    section.appendChild(
+        pagination
+    );
+
+
+    renderPage();
+
+
+    return section;
+}
 
 function createDictionarySection(
     title,
