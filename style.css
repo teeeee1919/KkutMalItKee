@@ -23,6 +23,11 @@ h1 {
     margin-bottom: 30px;
 }
 
+
+/* ============================= */
+/* 시작 화면 */
+/* ============================= */
+
 .startLetter {
     text-align: center;
     font-size: 20px;
@@ -38,6 +43,15 @@ h1 {
     margin-top: 30px;
 }
 
+.modeButtons button {
+    flex: 1;
+}
+
+
+/* ============================= */
+/* 버튼 */
+/* ============================= */
+
 button {
     border: none;
     border-radius: 12px;
@@ -52,16 +66,28 @@ button:hover {
     opacity: 0.8;
 }
 
-.modeButtons button {
-    flex: 1;
-}
+
+/* ============================= */
+/* 게임 상단 */
+/* ============================= */
 
 .top {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-size: 18px;
     margin-bottom: 30px;
 }
+
+.top button {
+    padding: 9px 13px;
+    font-size: 14px;
+}
+
+
+/* ============================= */
+/* 현재 글자 */
+/* ============================= */
 
 .required {
     text-align: center;
@@ -79,6 +105,11 @@ button:hover {
     margin: 5px 0;
 }
 
+
+/* ============================= */
+/* 현재 단어 */
+/* ============================= */
+
 .current {
     text-align: center;
     margin-top: 20px;
@@ -93,11 +124,21 @@ button:hover {
     margin-top: 0;
 }
 
+
+/* ============================= */
+/* 턴 메시지 */
+/* ============================= */
+
 .turnMessage {
     text-align: center;
     font-weight: bold;
     margin: 20px 0;
 }
+
+
+/* ============================= */
+/* 입력 */
+/* ============================= */
 
 .inputArea {
     display: flex;
@@ -117,12 +158,22 @@ button:hover {
     border-color: #555;
 }
 
+
+/* ============================= */
+/* 메시지 */
+/* ============================= */
+
 #message {
     min-height: 30px;
     margin-top: 15px;
     text-align: center;
     font-weight: bold;
 }
+
+
+/* ============================= */
+/* 사용한 단어 */
+/* ============================= */
 
 .historyBox {
     margin-top: 30px;
@@ -144,9 +195,19 @@ button:hover {
     border-radius: 8px;
 }
 
+
+/* ============================= */
+/* 숨김 */
+/* ============================= */
+
 .hidden {
-    display: none;
+    display: none !important;
 }
+
+
+/* ============================= */
+/* 종료 화면 */
+/* ============================= */
 
 #endScreen {
     text-align: center;
@@ -159,6 +220,11 @@ button:hover {
 #endScreen button {
     margin-top: 20px;
 }
+
+
+/* ============================= */
+/* 게임 기록 */
+/* ============================= */
 
 .recordBox {
     margin-top: 20px;
@@ -186,9 +252,7 @@ button:hover {
     background: #dddddd;
 }
 
-.hidden {
-    display: none;
-}
+
 /* ============================= */
 /* 사전 버튼 */
 /* ============================= */
@@ -235,7 +299,7 @@ button:hover {
 }
 
 .dictionaryScreen.hidden {
-    display: none;
+    display: none !important;
 }
 
 
@@ -257,8 +321,6 @@ button:hover {
     padding: 25px;
 
     overflow-y: auto;
-
-    box-sizing: border-box;
 }
 
 .dictionaryBox h2 {
@@ -280,9 +342,18 @@ button:hover {
     border: none;
     background: none;
 
+    color: #222;
+
     font-size: 22px;
 
+    padding: 5px;
+
     cursor: pointer;
+}
+
+.closeDictionary:hover {
+    background: #eee;
+    opacity: 1;
 }
 
 
@@ -292,8 +363,6 @@ button:hover {
 
 .dictionarySearch {
     width: 100%;
-
-    box-sizing: border-box;
 
     padding: 13px;
 
@@ -322,7 +391,7 @@ button:hover {
 
 
 /* ============================= */
-/* 분류 섹션 */
+/* 사전 섹션 */
 /* ============================= */
 
 .dictionarySection {
@@ -339,14 +408,26 @@ button:hover {
 
 
 /* ============================= */
+/* 공격/패배 단계 제목 */
+/* ============================= */
+
+.dictionaryLevelTitle {
+    font-weight: bold;
+
+    margin-top: 14px;
+    margin-bottom: 7px;
+
+    color: #555;
+}
+
+
+/* ============================= */
 /* 단어 목록 */
 /* ============================= */
 
 .dictionaryWords {
     display: flex;
-
     flex-wrap: wrap;
-
     gap: 7px;
 }
 
