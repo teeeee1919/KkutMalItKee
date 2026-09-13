@@ -159,3 +159,33 @@ button:hover {
 #endScreen button {
     margin-top: 20px;
 }
+
+.recordBox {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.recordBox h2 {
+    margin-top: 0;
+}
+
+.recordPlayer,
+.recordBot {
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 6px;
+}
+
+.recordPlayer {
+    background: #eeeeee;
+}
+
+.recordBot {
+    background: #dddddd;
+}
+
+.hidden {
+    display: none;
+}
