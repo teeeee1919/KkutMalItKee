@@ -119,6 +119,8 @@ let dictionary = [];
 let dictionarySet = new Set();
 let wordsByFirstLetter = new Map();
 
+let dictionaryLoaded = false;
+
 
 // =====================================================
 // words.txt 불러오기
@@ -168,6 +170,8 @@ fetch("./words.txt", {
             .push(word);
     }
 
+
+    dictionaryLoaded = true;
 
     console.log(
         "단어 사전 로딩 완료:",
@@ -253,7 +257,7 @@ const history =
 
 
 // =====================================================
-// "현재 글자" → "시작단어"
+// 시작단어 표시
 // =====================================================
 
 if (requiredLetterText) {
@@ -274,44 +278,8 @@ if (requiredLetterText) {
 
 
 // =====================================================
-// 두음법칙 글자 계산
+// 두음법칙
 // =====================================================
-//
-// 표준적인 두음법칙을 기준으로 계산함.
-//
-// ㄴ → ㅇ
-// 니 → 이
-// 녀 → 여
-// 뇨 → 요
-// 뉴 → 유
-// 냐 → 야
-// 녜 → 예
-//
-// ㄹ → ㄴ
-// 라 → 나
-// 래 → 내
-// 로 → 노
-// 뢰 → 뇌
-// 루 → 누
-// 르 → 느
-//
-// ㄹ → ㅇ
-// 랴 → 야
-// 려 → 여
-// 력 → 역
-// 련 → 연
-// 렬 → 열
-// 례 → 예
-// 료 → 요
-// 류 → 유
-// 리 → 이
-//
-// 받침이 있으면 받침도 그대로 유지
-// 륨 → 윰
-// 력 → 역
-// 름 → 음
-//
-
 
 function makeSyllable(
     initial,
@@ -339,7 +307,6 @@ function getDuumLetters(letter) {
     const code =
         letter.charCodeAt(0);
 
-    // 한글 음절이 아니면 그대로
     if (
         code < 0xAC00 ||
         code > 0xD7A3
@@ -362,30 +329,13 @@ function getDuumLetters(letter) {
         index % 28;
 
 
-    // -------------------------------------------------
-    // 초성 번호
-    //
-    // ㄱ 0
-    // ㄲ 1
-    // ㄴ 2
-    // ㄷ 3
-    // ㄸ 4
-    // ㄹ 5
-    // ...
-    // ㅇ 11
-    // -------------------------------------------------
-
-
-    // -------------------------------------------------
     // ㄴ → ㅇ
-    //
-    // 니 → 이
+    // 냐 → 야
     // 녀 → 여
+    // 녜 → 예
     // 뇨 → 요
     // 뉴 → 유
-    // 냐 → 야
-    // 녜 → 예
-    // -------------------------------------------------
+    // 니 → 이
 
     const nToIeungVowels = [
         2,   // ㅑ
@@ -412,19 +362,13 @@ function getDuumLetters(letter) {
     }
 
 
-    // -------------------------------------------------
     // ㄹ → ㅇ
-    //
     // 랴 → 야
     // 려 → 여
     // 례 → 예
     // 료 → 요
     // 류 → 유
     // 리 → 이
-    //
-    // 륨 → 윰
-    // 력 → 역
-    // -------------------------------------------------
 
     if (
         initial === 5 &&
@@ -441,18 +385,16 @@ function getDuumLetters(letter) {
     }
 
 
-    // -------------------------------------------------
     // ㄹ → ㄴ
-    //
     // 라 → 나
     // 래 → 내
+    // 러 → 너
+    // 레 → 네
     // 로 → 노
-    // 뢰 → 뇌
     // 루 → 누
     // 르 → 느
-    //
-    // 단, ㅣ 계열은 위의 ㄹ → ㅇ을 사용
-    // -------------------------------------------------
+    // 뢰 → 뇌
+    // 래 → 내
 
     const rieulToNieunVowels = [
         0,   // ㅏ
@@ -461,8 +403,8 @@ function getDuumLetters(letter) {
         5,   // ㅔ
         8,   // ㅗ
         13,  // ㅜ
-        18,   // ㅡ
-        19  // ㅢ
+        18,  // ㅡ
+        19   // ㅢ
     ];
 
 
@@ -488,16 +430,8 @@ function getDuumLetters(letter) {
 
 
 // =====================================================
-// 화면에 표시할 시작단어
+// 두음법칙 표시
 // =====================================================
-//
-// 예:
-// 니 → 니(이)
-// 륨 → 륨(윰)
-// 력 → 력(역)
-// 라 → 라(나)
-//
-
 
 function formatRequiredLetter(letter) {
 
@@ -517,10 +451,6 @@ function formatRequiredLetter(letter) {
 }
 
 
-// =====================================================
-// 시작단어 화면 업데이트
-// =====================================================
-
 function updateRequiredLetterDisplay(letter) {
 
     requiredLetterText.textContent =
@@ -529,7 +459,7 @@ function updateRequiredLetterDisplay(letter) {
 
 
 // =====================================================
-// 이어지는 단어인지 확인
+// 단어가 이어지는지 확인
 // =====================================================
 
 function canStartWith(
@@ -564,7 +494,7 @@ function getAvailableWords(
     const possibleLetters =
         getDuumLetters(letter);
 
-    let words = [];
+    let result = [];
 
     for (
         const possibleLetter
@@ -576,11 +506,11 @@ function getAvailableWords(
                 possibleLetter
             ) || [];
 
-        words.push(...list);
+        result.push(...list);
     }
 
     return [
-        ...new Set(words)
+        ...new Set(result)
     ].filter(
         word => !used.has(word)
     );
@@ -588,7 +518,7 @@ function getAvailableWords(
 
 
 // =====================================================
-// 공격력 확인
+// 공격 단계 확인
 // =====================================================
 
 function getAttackLevel(word) {
@@ -629,14 +559,12 @@ function isOneShotWord(word) {
             ])
         );
 
-    return (
-        nextWords.length === 0
-    );
+    return nextWords.length === 0;
 }
 
 
 // =====================================================
-// 공격 단어인지
+// 공격 단어
 // =====================================================
 
 function isAttackWord(word) {
@@ -657,10 +585,20 @@ function isAttackWord(word) {
 
 function startGame(mode) {
 
+    if (!dictionaryLoaded) {
+
+        alert(
+            "단어 사전이 아직 로딩되지 않았습니다.\n잠시 후 다시 눌러주세요."
+        );
+
+        return;
+    }
+
+
     if (dictionary.length === 0) {
 
         alert(
-            "아직 단어 사전이 로딩되지 않았습니다."
+            "단어 사전이 비어 있습니다."
         );
 
         return;
@@ -744,7 +682,6 @@ function startGame(mode) {
 
         setBotTurn();
 
-
         setTimeout(() => {
 
             if (gameStarted) {
@@ -799,10 +736,6 @@ function setBotTurn() {
 // =====================================================
 // 필요한 글자
 // =====================================================
-//
-// 화면에는 니(이)가 보여도
-// 실제 계산에는 원래 글자인 "니"만 사용
-//
 
 function getRequiredLetter() {
 
@@ -876,10 +809,6 @@ function submitWord() {
         getRequiredLetter();
 
 
-    // -------------------------------------------------
-    // 두음법칙 적용
-    // -------------------------------------------------
-
     if (
         !canStartWith(
             word,
@@ -894,9 +823,7 @@ function submitWord() {
     }
 
 
-    // -------------------------------------------------
-    // 첫 턴 공격 / 한방 금지
-    // -------------------------------------------------
+    // 첫 턴 공격/한방 금지
 
     if (firstMove) {
 
@@ -956,8 +883,6 @@ function useWord(word) {
         word;
 
 
-    // 마지막 글자를 기준으로
-    // 두음법칙 표시
     updateRequiredLetterDisplay(
         word[word.length - 1]
     );
@@ -1023,9 +948,7 @@ function chooseBotWord() {
     }
 
 
-    // -------------------------------------------------
-    // 첫 턴에는 공격 / 한방 단어 절대 금지
-    // -------------------------------------------------
+    // 첫 턴에는 공격/한방 절대 금지
 
     if (firstMove) {
 
@@ -1037,9 +960,6 @@ function chooseBotWord() {
             );
 
 
-        // 안전한 단어가 하나도 없다면
-        // 봇이 공격단어를 억지로 선택하지 않도록
-        // null 처리
         if (candidates.length === 0) {
             return null;
         }
@@ -1051,9 +971,7 @@ function chooseBotWord() {
 
             const nextWords =
                 getAvailableWords(
-                    word[
-                        word.length - 1
-                    ],
+                    word[word.length - 1],
                     new Set([
                         ...usedWords,
                         word
@@ -1063,14 +981,11 @@ function chooseBotWord() {
 
             let score = 0;
 
-
             const attackLevel =
                 getAttackLevel(word);
 
 
-            // -------------------------------------------------
             // 한방
-            // -------------------------------------------------
 
             if (
                 nextWords.length === 0
@@ -1080,9 +995,9 @@ function chooseBotWord() {
             }
 
 
-            // -------------------------------------------------
             // 공격 단어
-            // -------------------------------------------------
+            // 숫자가 작을수록 강함
+            // 2수 > 4수 > 6수 > ...
 
             if (
                 attackLevel !== Infinity
@@ -1094,18 +1009,14 @@ function chooseBotWord() {
             }
 
 
-            // -------------------------------------------------
-            // 일반 단어
-            // -------------------------------------------------
+            // 상대에게 선택지를 적게 줌
 
             score +=
                 5000 -
                 nextWords.length * 20;
 
 
-            // -------------------------------------------------
-            // 약간의 랜덤
-            // -------------------------------------------------
+            // 완전 동일한 상황 방지
 
             score +=
                 Math.random() * 100;
@@ -1223,7 +1134,6 @@ function timeOut() {
         message.textContent =
             "목숨을 하나 잃었습니다.";
 
-
         setPlayerTurn();
 
     }, 700);
@@ -1303,7 +1213,7 @@ function giveUpRound() {
 
 
 // =====================================================
-// 목숨
+// 목숨 표시
 // =====================================================
 
 function updateLives() {
@@ -1317,7 +1227,7 @@ function updateLives() {
 
 
 // =====================================================
-// 사용 단어
+// 사용한 단어 표시
 // =====================================================
 
 function updateHistory() {
