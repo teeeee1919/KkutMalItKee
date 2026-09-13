@@ -189,3 +189,178 @@ button:hover {
 .hidden {
     display: none;
 }
+/* ============================= */
+/* 사전 버튼 */
+/* ============================= */
+
+.dictionaryButton {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #444;
+    color: white;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.dictionaryButton:hover {
+    background: #555;
+}
+
+
+/* ============================= */
+/* 사전 화면 */
+/* ============================= */
+
+.dictionaryScreen {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.7);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 1000;
+
+    padding: 20px;
+}
+
+.dictionaryScreen.hidden {
+    display: none;
+}
+
+
+/* ============================= */
+/* 사전 박스 */
+/* ============================= */
+
+.dictionaryBox {
+    position: relative;
+
+    width: 100%;
+    max-width: 600px;
+    max-height: 85vh;
+
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 25px;
+
+    overflow-y: auto;
+
+    box-sizing: border-box;
+}
+
+.dictionaryBox h2 {
+    margin-top: 0;
+    text-align: center;
+}
+
+
+/* ============================= */
+/* 닫기 버튼 */
+/* ============================= */
+
+.closeDictionary {
+    position: absolute;
+
+    right: 15px;
+    top: 15px;
+
+    border: none;
+    background: none;
+
+    font-size: 22px;
+
+    cursor: pointer;
+}
+
+
+/* ============================= */
+/* 검색창 */
+/* ============================= */
+
+.dictionarySearch {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 13px;
+
+    border: 1px solid #ccc;
+    border-radius: 10px;
+
+    font-size: 16px;
+
+    margin-bottom: 20px;
+}
+
+.dictionarySearch:focus {
+    outline: none;
+    border-color: #777;
+}
+
+
+/* ============================= */
+/* 안내문 */
+/* ============================= */
+
+.dictionaryGuide {
+    text-align: center;
+    color: #888;
+}
+
+
+/* ============================= */
+/* 분류 섹션 */
+/* ============================= */
+
+.dictionarySection {
+    margin-bottom: 25px;
+}
+
+.dictionarySection h3 {
+    margin-bottom: 10px;
+
+    border-bottom: 2px solid #ddd;
+
+    padding-bottom: 7px;
+}
+
+
+/* ============================= */
+/* 단어 목록 */
+/* ============================= */
+
+.dictionaryWords {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 7px;
+}
+
+.dictionaryWord {
+    padding: 7px 10px;
+
+    background: #f1f1f1;
+
+    border-radius: 7px;
+
+    font-size: 14px;
+}
+
+.dictionaryEmpty {
+    color: #888;
+    font-size: 14px;
+}
