@@ -1320,3 +1320,71 @@ wordInput.addEventListener(
 
     }
 );
+
+// =====================================================
+// 게임 기록 보기
+// =====================================================
+
+function showGameRecord() {
+
+    const recordBox =
+        document.getElementById("recordBox");
+
+    const gameRecordElement =
+        document.getElementById("gameRecord");
+
+
+    gameRecordElement.innerHTML = "";
+
+
+    if (gameRecord.length === 0) {
+
+        gameRecordElement.textContent =
+            "기록된 단어가 없습니다.";
+
+    }
+    else {
+
+        gameRecord.forEach(
+            (record, index) => {
+
+                const row =
+                    document.createElement("div");
+
+                row.className =
+                    record.player === "당신"
+                        ? "recordPlayer"
+                        : "recordBot";
+
+
+                row.textContent =
+                    (index + 1) +
+                    ". " +
+                    record.player +
+                    " : " +
+                    record.word;
+
+
+                gameRecordElement.appendChild(
+                    row
+                );
+            }
+        );
+    }
+
+
+    recordBox.classList.remove("hidden");
+}
+
+
+// =====================================================
+// 게임 기록 닫기
+// =====================================================
+
+function hideGameRecord() {
+
+    const recordBox =
+        document.getElementById("recordBox");
+
+    recordBox.classList.add("hidden");
+}
