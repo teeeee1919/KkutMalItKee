@@ -202,6 +202,12 @@ let usedWords = [];
 
 let lives = MAX_LIVES;
 
+// =====================================================
+// 게임 기록
+// =====================================================
+
+let gameRecord = [];
+
 let playerTurn = false;
 let firstMove = true;
 
