@@ -86,18 +86,33 @@
     </section>
 
 
-    <!-- 결과 화면 -->
-    <section id="endScreen" class="hidden">
+<section id="endScreen" class="hidden">
 
-        <h1 id="resultTitle"></h1>
+    <h1 id="resultTitle"></h1>
 
-        <p id="resultMessage"></p>
+    <p id="resultMessage"></p>
 
-        <button onclick="location.reload()">
-            다시 하기
+    <button onclick="showGameRecord()">
+        기록 보기
+    </button>
+
+    <button onclick="location.reload()">
+        다시 하기
+    </button>
+
+    <div id="recordBox" class="recordBox hidden">
+
+        <h2>📋 게임 기록</h2>
+
+        <div id="gameRecord"></div>
+
+        <button onclick="hideGameRecord()">
+            기록 닫기
         </button>
 
-    </section>
+    </div>
+
+</section>
 
 </div>
 
