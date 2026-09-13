@@ -24,6 +24,43 @@
             <button onclick="startGame('player')">선공</button>
             <button onclick="startGame('bot')">후공</button>
             <button onclick="startGame('random')">랜덤</button>
+            <button id="dictionaryButton" class="dictionaryButton">
+    📖 사전보기
+</button>
+
+<!-- ============================= -->
+<!-- 사전 -->
+<!-- ============================= -->
+
+<div id="dictionaryScreen" class="dictionaryScreen hidden">
+
+    <div class="dictionaryBox">
+
+        <button id="closeDictionary" class="closeDictionary">
+            ✕
+        </button>
+
+        <h2>📖 끝말잇기 사전</h2>
+
+        <input
+            type="text"
+            id="dictionarySearch"
+            class="dictionarySearch"
+            placeholder="첫 글자를 입력하세요"
+            maxlength="1"
+        >
+
+        <div id="dictionaryResult">
+
+            <p class="dictionaryGuide">
+                첫 글자를 입력하면 단어가 표시됩니다.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
         </div>
     </section>
 
