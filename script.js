@@ -2333,72 +2333,184 @@ function createLevelDictionarySection(
             "dictionaryWords";
 
 
-        for (
-            const word
-            of words
-        ) {
-
-            const line =
-                document.createElement(
-                    "div"
-                );
-
-
-            line.className =
-                "dictionaryWordLine";
-
-
-            const wordText =
-                document.createElement(
-                    "span"
-                );
-
-
-            wordText.className =
-                "dictionaryWordText";
-
-
-            wordText.textContent =
-                word;
-
-
-            line.appendChild(
-                wordText
+        const pagination =
+            document.createElement(
+                "div"
             );
 
 
-            const arrow =
-                document.createElement(
-                    "span"
+        pagination.className =
+            "dictionaryPagination";
+
+
+        const pageSize = 30;
+
+
+        let currentPage = 1;
+
+
+        function renderPage() {
+
+            container.innerHTML = "";
+
+
+            const start =
+                (currentPage - 1) *
+                pageSize;
+
+
+            const end =
+                start + pageSize;
+
+
+            const pageWords =
+                words.slice(
+                    start,
+                    end
                 );
 
 
-            arrow.className =
-                label === "승리"
-                    ? "dictionaryArrow up"
-                    : "dictionaryArrow down";
+            for (
+                const word
+                of pageWords
+            ) {
+
+                const line =
+                    document.createElement(
+                        "div"
+                    );
 
 
-            arrow.textContent =
-                label === "승리"
-                    ? "⬆️"
-                    : "⬇️";
+                line.className =
+                    "dictionaryWordLine";
 
 
-            line.appendChild(
-                arrow
-            );
+                const wordText =
+                    document.createElement(
+                        "span"
+                    );
 
 
-            container.appendChild(
-                line
-            );
+                wordText.className =
+                    "dictionaryWordText";
+
+
+                wordText.textContent =
+                    word;
+
+
+                line.appendChild(
+                    wordText
+                );
+
+
+                const arrow =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                arrow.className =
+                    label === "승리"
+                        ? "dictionaryArrow up"
+                        : "dictionaryArrow down";
+
+
+                arrow.textContent =
+                    label === "승리"
+                        ? "⬆️"
+                        : "⬇️";
+
+
+                line.appendChild(
+                    arrow
+                );
+
+
+                container.appendChild(
+                    line
+                );
+            }
+
+
+            pagination.innerHTML = "";
+
+
+            const totalPages =
+                Math.ceil(
+                    words.length /
+                    pageSize
+                );
+
+
+            if (
+                totalPages <= 1
+            ) {
+
+                return;
+            }
+
+
+            for (
+                let page = 1;
+                page <= totalPages;
+                page++
+            ) {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                button.textContent =
+                    page;
+
+
+                button.className =
+                    "dictionaryPageButton";
+
+
+                if (
+                    page === currentPage
+                ) {
+
+                    button.classList.add(
+                        "active"
+                    );
+                }
+
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        currentPage =
+                            page;
+
+                        renderPage();
+                    }
+                );
+
+
+                pagination.appendChild(
+                    button
+                );
+            }
         }
 
 
         section.appendChild(
             container
         );
+
+
+        section.appendChild(
+            pagination
+        );
+
+
+        renderPage();
     }
 
 
@@ -2423,6 +2535,9 @@ function createLevelDictionarySection(
         );
     }
 
+
+    return section;
+}
 
     return section;
 }
