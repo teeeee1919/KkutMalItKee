@@ -121,6 +121,75 @@ let wordsByFirstLetter = new Map();
 
 
 // =====================================================
+// words.txt 불러오기
+// =====================================================
+
+fetch("./words.txt", {
+    cache: "no-store"
+})
+.then(response => {
+
+    if (!response.ok) {
+        throw new Error(
+            "words.txt를 불러오지 못했습니다. 상태 코드: " +
+            response.status
+        );
+    }
+
+    return response.text();
+})
+.then(text => {
+
+    dictionary = text
+        .replace(/^\uFEFF/, "")
+        .split(/\r?\n/)
+        .map(word => word.trim())
+        .filter(word => word.length > 0);
+
+    dictionarySet = new Set(dictionary);
+
+    wordsByFirstLetter = new Map();
+
+
+    for (const word of dictionary) {
+
+        const firstLetter = word[0];
+
+        if (!wordsByFirstLetter.has(firstLetter)) {
+
+            wordsByFirstLetter.set(
+                firstLetter,
+                []
+            );
+        }
+
+        wordsByFirstLetter
+            .get(firstLetter)
+            .push(word);
+    }
+
+
+    console.log(
+        "단어 사전 로딩 완료:",
+        dictionary.length,
+        "개"
+    );
+})
+.catch(error => {
+
+    console.error(
+        "단어 사전 로딩 실패:",
+        error
+    );
+
+    alert(
+        "단어 사전을 불러오지 못했습니다.\n\n" +
+        error.message
+    );
+});
+
+
+// =====================================================
 // 게임 상태
 // =====================================================
 
@@ -393,7 +462,7 @@ function getDuumLetters(letter) {
         8,   // ㅗ
         13,  // ㅜ
         18,   // ㅡ
-        21   // ㅢ
+        19  // ㅢ
     ];
 
 
