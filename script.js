@@ -2069,22 +2069,60 @@ function createLevelDictionarySection(
             of words
         ) {
 
-            const element =
+            const line =
                 document.createElement(
                     "div"
                 );
 
 
-            element.className =
-                "dictionaryWord";
+            line.className =
+                "dictionaryWordLine";
 
 
-            element.textContent =
+            const wordText =
+                document.createElement(
+                    "span"
+                );
+
+
+            wordText.className =
+                "dictionaryWordText";
+
+
+            wordText.textContent =
                 word;
 
 
+            line.appendChild(
+                wordText
+            );
+
+
+            const arrow =
+                document.createElement(
+                    "span"
+                );
+
+
+            arrow.className =
+                label === "승리"
+                    ? "dictionaryArrow up"
+                    : "dictionaryArrow down";
+
+
+            arrow.textContent =
+                label === "승리"
+                    ? "⬆️"
+                    : "⬇️";
+
+
+            line.appendChild(
+                arrow
+            );
+
+
             container.appendChild(
-                element
+                line
             );
         }
 
