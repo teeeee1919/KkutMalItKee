@@ -1393,3 +1393,531 @@ function hideGameRecord() {
 
     recordBox.classList.add("hidden");
 }
+// =====================================================
+// 사전 기능
+// =====================================================
+
+const dictionaryButton =
+    document.getElementById("dictionaryButton");
+
+const dictionaryScreen =
+    document.getElementById("dictionaryScreen");
+
+const closeDictionary =
+    document.getElementById("closeDictionary");
+
+const dictionarySearch =
+    document.getElementById("dictionarySearch");
+
+const dictionaryResult =
+    document.getElementById("dictionaryResult");
+
+
+// =====================================================
+// 사전 열기
+// =====================================================
+
+dictionaryButton.addEventListener(
+    "click",
+    function() {
+
+        dictionaryScreen.classList.remove(
+            "hidden"
+        );
+
+        dictionarySearch.value = "";
+
+        dictionaryResult.innerHTML = `
+            <p class="dictionaryGuide">
+                첫 글자를 입력하면 단어가 표시됩니다.
+            </p>
+        `;
+
+        setTimeout(() => {
+            dictionarySearch.focus();
+        }, 100);
+    }
+);
+
+
+// =====================================================
+// 사전 닫기
+// =====================================================
+
+closeDictionary.addEventListener(
+    "click",
+    function() {
+
+        dictionaryScreen.classList.add(
+            "hidden"
+        );
+    }
+);
+
+
+// =====================================================
+// 사전 검색
+// =====================================================
+
+dictionarySearch.addEventListener(
+    "input",
+    function() {
+
+        const firstLetter =
+            dictionarySearch.value.trim();
+
+        if (!firstLetter) {
+
+            dictionaryResult.innerHTML = `
+                <p class="dictionaryGuide">
+                    첫 글자를 입력하면 단어가 표시됩니다.
+                </p>
+            `;
+
+            return;
+        }
+
+
+        showDictionaryWords(
+            firstLetter
+        );
+    }
+);
+
+
+// =====================================================
+// 사전 단어 분류
+// =====================================================
+
+function classifyDictionaryWord(word) {
+
+    /*
+     * 1. 한방단어
+     *    해당 단어를 사용한 뒤
+     *    상대가 이어갈 단어가 하나도 없는 경우
+     */
+
+    if (isOneShotWordForDictionary(word)) {
+
+        return {
+            type: "oneshot",
+            attackLevel: null
+        };
+    }
+
+
+    /*
+     * 2. 공격단어
+     *    끝 글자가 공격 글자 목록에 있음
+     */
+
+    const attackLevel =
+        getAttackLevel(word);
+
+    if (attackLevel !== Infinity) {
+
+        return {
+            type: "attack",
+            attackLevel: attackLevel
+        };
+    }
+
+
+    /*
+     * 3. 루트단어
+     *    한방도 아니고 공격도 아닌 일반 단어
+     */
+
+    return {
+        type: "root",
+        attackLevel: null
+    };
+}
+
+
+// =====================================================
+// 사전용 한방단어 검사
+// =====================================================
+
+function isOneShotWordForDictionary(word) {
+
+    if (!word) {
+        return false;
+    }
+
+
+    const lastLetter =
+        word[word.length - 1];
+
+
+    /*
+     * 검색 결과에서는 현재 게임에서 사용된 단어와
+     * 상관없이 사전 전체를 기준으로 검사해야 함.
+     */
+
+    const possibleLetters =
+        getDuumLetters(lastLetter);
+
+
+    let nextWords = [];
+
+
+    for (
+        const possibleLetter
+        of possibleLetters
+    ) {
+
+        const list =
+            wordsByFirstLetter.get(
+                possibleLetter
+            ) || [];
+
+        nextWords.push(...list);
+    }
+
+
+    /*
+     * 자기 자신은 다음 단어가 될 수 없으므로 제거
+     */
+
+    nextWords =
+        [
+            ...new Set(nextWords)
+        ].filter(
+            nextWord =>
+                nextWord !== word
+        );
+
+
+    return nextWords.length === 0;
+}
+
+
+// =====================================================
+// 사전 표시
+// =====================================================
+
+function showDictionaryWords(firstLetter) {
+
+    /*
+     * 첫 글자는 한 글자만 사용
+     */
+
+    firstLetter =
+        firstLetter[0];
+
+
+    const possibleLetters =
+        getDuumLetters(firstLetter);
+
+
+    let words = [];
+
+
+    /*
+     * 두음법칙 적용
+     *
+     * 예:
+     * 녀 검색 → 녀 + 여로 시작하는 단어
+     */
+
+    for (
+        const letter
+        of possibleLetters
+    ) {
+
+        const list =
+            wordsByFirstLetter.get(letter)
+            || [];
+
+        words.push(...list);
+    }
+
+
+    words = [
+        ...new Set(words)
+    ];
+
+
+    /*
+     * 길이순 정렬
+     * 긴 단어가 먼저 나오게 함
+     */
+
+    words.sort(
+        (a, b) => {
+
+            if (b.length !== a.length) {
+                return b.length - a.length;
+            }
+
+            return a.localeCompare(b);
+        }
+    );
+
+
+    if (words.length === 0) {
+
+        dictionaryResult.innerHTML = `
+            <p class="dictionaryEmpty">
+                해당 글자로 시작하는 단어가 없습니다.
+            </p>
+        `;
+
+        return;
+    }
+
+
+    const oneShotWords = [];
+    const attackWords = [];
+    const rootWords = [];
+
+
+    for (
+        const word
+        of words
+    ) {
+
+        const classification =
+            classifyDictionaryWord(word);
+
+
+        if (
+            classification.type === "oneshot"
+        ) {
+
+            oneShotWords.push(word);
+
+        }
+        else if (
+            classification.type === "attack"
+        ) {
+
+            attackWords.push({
+                word: word,
+                level: classification.attackLevel
+            });
+
+        }
+        else {
+
+            rootWords.push(word);
+        }
+    }
+
+
+    /*
+     * 공격단어는
+     * 2수 → 4수 → 6수 → ...
+     * 순서로 정렬
+     */
+
+    attackWords.sort(
+        (a, b) => {
+
+            if (a.level !== b.level) {
+                return a.level - b.level;
+            }
+
+            if (b.word.length !== a.word.length) {
+                return b.word.length - a.word.length;
+            }
+
+            return a.word.localeCompare(b.word);
+        }
+    );
+
+
+    dictionaryResult.innerHTML = "";
+
+
+    // =================================================
+    // 한방단어
+    // =================================================
+
+    dictionaryResult.appendChild(
+        createDictionarySection(
+            "💀 한방단어",
+            oneShotWords.map(
+                word => word
+            )
+        )
+    );
+
+
+    // =================================================
+    // 공격단어
+    // =================================================
+
+    const attackSection =
+        document.createElement("div");
+
+    attackSection.className =
+        "dictionarySection";
+
+
+    const attackTitle =
+        document.createElement("h3");
+
+    attackTitle.textContent =
+        "⚔️ 공격단어";
+
+    attackSection.appendChild(
+        attackTitle
+    );
+
+
+    if (attackWords.length === 0) {
+
+        const empty =
+            document.createElement("p");
+
+        empty.className =
+            "dictionaryEmpty";
+
+        empty.textContent =
+            "공격단어가 없습니다.";
+
+        attackSection.appendChild(
+            empty
+        );
+
+    }
+    else {
+
+        const wordContainer =
+            document.createElement("div");
+
+        wordContainer.className =
+            "dictionaryWords";
+
+
+        for (
+            const item
+            of attackWords
+        ) {
+
+            const wordElement =
+                document.createElement("div");
+
+            wordElement.className =
+                "dictionaryWord";
+
+
+            wordElement.textContent =
+                item.word +
+                " (" +
+                item.level +
+                "수 이내 승리)";
+
+
+            wordContainer.appendChild(
+                wordElement
+            );
+        }
+
+
+        attackSection.appendChild(
+            wordContainer
+        );
+    }
+
+
+    dictionaryResult.appendChild(
+        attackSection
+    );
+
+
+    // =================================================
+    // 루트단어
+    // =================================================
+
+    dictionaryResult.appendChild(
+        createDictionarySection(
+            "🌱 루트단어",
+            rootWords
+        )
+    );
+}
+
+
+// =====================================================
+// 사전 섹션 생성
+// =====================================================
+
+function createDictionarySection(
+    title,
+    words
+) {
+
+    const section =
+        document.createElement("div");
+
+    section.className =
+        "dictionarySection";
+
+
+    const titleElement =
+        document.createElement("h3");
+
+    titleElement.textContent =
+        title;
+
+    section.appendChild(
+        titleElement
+    );
+
+
+    if (words.length === 0) {
+
+        const empty =
+            document.createElement("p");
+
+        empty.className =
+            "dictionaryEmpty";
+
+        empty.textContent =
+            "해당 단어가 없습니다.";
+
+        section.appendChild(
+            empty
+        );
+
+        return section;
+    }
+
+
+    const container =
+        document.createElement("div");
+
+    container.className =
+        "dictionaryWords";
+
+
+    for (
+        const word
+        of words
+    ) {
+
+        const element =
+            document.createElement("div");
+
+        element.className =
+            "dictionaryWord";
+
+        element.textContent =
+            word;
+
+        container.appendChild(
+            element
+        );
+    }
+
+
+    section.appendChild(
+        container
+    );
+
+
+    return section;
+}
