@@ -487,7 +487,7 @@ function getDuumLetters(letter) {
     }
 
 
-    const rieulToNieunVowels = [
+        const rieulToNieunVowels = [
         0,
         1,
         4,
@@ -513,6 +513,34 @@ function getDuumLetters(letter) {
         );
     }
 
+
+    // 르/리 계열 두음법칙:
+    // ㄹ + 이/야/여/요/유 계열 → ㅇ
+    // 예: 륨 → 윰
+
+    const rieulToIeungVowels = [
+        2,
+        6,
+        7,
+        12,
+        13,
+        20
+    ];
+
+
+    if (
+        initial === 5 &&
+        rieulToIeungVowels.includes(vowel)
+    ) {
+
+        result.push(
+            makeSyllable(
+                11,
+                vowel,
+                finalSound
+            )
+        );
+    }
 
     return [
         ...new Set(result)
